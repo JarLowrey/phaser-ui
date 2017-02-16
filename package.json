@@ -5,6 +5,7 @@
   "main": "build/phaser-ui.js",
   "scripts": {
     "test": "npm run build && cd test && npm start",
+    "publish-local":"npm run build && npm pack && cd test && npm install ../phaser-ui*.tgz && rm ../phaser-ui*.tgz",
     "build": "webpack"
   },
   "repository": {

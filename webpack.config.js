@@ -1,9 +1,10 @@
 module.exports = {
-    entry: "./src/components.js",
+    entry: "./src/index.js",
     output: {
         path: 'build/',
         filename: "phaser-ui.js"
-    },
+    }
+    /*,
     module: {
         loaders: [{
             test: /\.js$/,
@@ -14,4 +15,5 @@ module.exports = {
             }
         }]
     }
+    */
 };

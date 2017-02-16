@@ -1,5 +1,3 @@
-/* jshint esversion: 6 */
-
 import Progress from './Progress'
 
 export default class ProgressBar extends Progress {

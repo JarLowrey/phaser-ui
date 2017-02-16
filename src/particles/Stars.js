@@ -7,7 +7,6 @@
  * https://gamedevelopment.tutsplus.com/tutorials/parallax-scrolling-a-simple-effective-way-to-add-depth-to-a-2d-game--cms-21510
  * TODO: star particles have infinite life, choose a random position when falling offscreen, iron out kinks in the vals used for para
  */
-
 import Star from './Star';
 
 export default class Stars {

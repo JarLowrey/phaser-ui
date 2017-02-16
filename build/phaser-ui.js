@@ -68,75 +68,57 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 /*
   Progress
   Parent to UI elements that visualize a range of data, eg a ProgressBar or ProgressPie
 */
 
-var Progress = function (_Phaser$Group) {
-    _inherits(Progress, _Phaser$Group);
+class Progress extends Phaser.Group {
 
-    _createClass(Progress, [{
-        key: 'progress',
-        get: function get() {
-            return this._progress;
-        },
-        set: function set(val) {
-            if (val > 100) {
-                val = 100;
-            }
-            this._progress = val;
-
-            //artifacts show up if you crop <=0. Thus hide it instead
-            this.barSprite.visible = val > 0;
-            if (val > 0) {
-                this._applyFrontGraphicColor();
-
-                //Create the cropping parameters: set the new, cropped image properties.
-                var newWidth = val / 100 * this.width;
-                var x = this.barShrinksTowardsLeft ? 0 : this.width - newWidth;
-                var cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
-
-                //perform the crop!
-                this.frontGraphic.crop(cropRect);
-            }
+    get progress() {
+        return this._progress;
+    }
+    set progress(val) {
+        if (val > 100) {
+            val = 100;
         }
-    }, {
-        key: 'frontGraphicColor',
-        get: function get() {
-            return this._frontGraphicColor;
-        }
-        //either a hex value string, or a list of objects where each object has a (percentage) 'threshold' and a 'color'
-        ,
-        set: function set(val) {
-            this._frontGraphicColor = val;
+        this._progress = val;
+
+        //artifacts show up if you crop <=0. Thus hide it instead
+        this.barSprite.visible = val > 0;
+        if (val > 0) {
             this._applyFrontGraphicColor();
-        }
-    }]);
 
-    function Progress(game, width, height,
-    //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-    //This must be a function with params (width,height) that returns a graphic
-    getBgGraphicSrc, getFrontGraphicSrc) {
-        var innerGraphicOffset = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-        var frontColor = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : [{
+            //Create the cropping parameters: set the new, cropped image properties.
+            const newWidth = (val / 100) * this.width;
+            const x = (this.barShrinksTowardsLeft) ? 0 : this.width - newWidth;
+            const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
+
+            //perform the crop!
+            this.frontGraphic.crop(cropRect);
+        }
+    }
+
+    get frontGraphicColor() {
+        return this._frontGraphicColor;
+    }
+    //either a hex value string, or a list of objects where each object has a (percentage) 'threshold' and a 'color'
+    set frontGraphicColor(val) {
+        this._frontGraphicColor = val;
+        this._applyFrontGraphicColor();
+    }
+
+    constructor(game,
+        width, height,
+        //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
+        //This must be a function with params (width,height) that returns a graphic
+        getBgGraphicSrc,
+        getFrontGraphicSrc,
+        innerGraphicOffset = 0,
+        frontColor = [{
             'threshold': 25,
             'color': '0xff0000'
         }, {
@@ -145,36 +127,32 @@ var Progress = function (_Phaser$Group) {
         }, {
             'threshold': 100,
             'color': '0x00ff00'
-        }];
-        var fontStyle = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : '';
-        var text = arguments.length > 8 && arguments[8] !== undefined ? arguments[8] : '';
-
-        _classCallCheck(this, Progress);
+        }],
+        fontStyle = '', text = ''
+    ) {
+        super(game);
 
         //save useful vars
-        var _this = _possibleConstructorReturn(this, (Progress.__proto__ || Object.getPrototypeOf(Progress)).call(this, game));
-
-        _this.frontGraphicFn = getFrontGraphicSrc;
-        _this.innerGraphicOffset = innerGraphicOffset;
+        this.frontGraphicFn = getFrontGraphicSrc;
+        this.innerGraphicOffset = innerGraphicOffset;
 
         // create the sprites
-        _this.bgGraphic = getBgGraphicSrc(width, height);
-        _this.bgGraphic.anchor.setTo(0.5, 0.5);
+        this.bgGraphic = getBgGraphicSrc(width, height);
+        this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-        _this.frontGraphic = getFrontGraphicSrc(width - innerGraphicOffset, height - innerGraphicOffset);
-        _this.frontGraphic.anchor.setTo(0.5, 0.5);
+        this.frontGraphic = getFrontGraphicSrc(width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontGraphic.anchor.setTo(0.5, 0.5);
 
-        _this.text = _this.game.add.text(0, 0, text, fontStyle);
-        _this.text.anchor.setTo(0.5, 0.5);
+        this.text = this.game.add.text(0, 0, text, fontStyle);
+        this.text.anchor.setTo(0.5, 0.5);
 
-        _this.addChild(_this.bgGraphic);
-        _this.addChild(_this.frontGraphic);
-        _this.addChild(_this.text);
+        this.addChild(this.bgGraphic);
+        this.addChild(this.frontGraphic);
+        this.addChild(this.text);
 
         //set sprite properties
-        _this.frontGraphicColor = frontColor;
-        _this.progress = 100;
-        return _this;
+        this.frontGraphicColor = frontColor;
+        this.progress = 100;
     }
 
     /*
@@ -183,11 +161,13 @@ var Progress = function (_Phaser$Group) {
         this.bgPressed.anchor.setTo(0.5, 0.5);
         this.addChildAt(this.bgPressed, 0);
         this.bgPressed.tint = bgPressedColor;
-         this.outlinePressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width, this.height));
+
+        this.outlinePressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width, this.height));
         this.outlinePressed.anchor.setTo(0.5, 0.5);
         this.addChildAt(this.outlinePressed, 0);
         this.outlinePressed.tint = outlinePressedColor;
-         //register click listeners
+
+        //register click listeners
         this.setAll('inputEnabled', true);
         this.callAll('events.onInputDown.add', 'events.onInputDown', this.onDown, this);
         this.callAll('events.onInputUp.add', 'events.onInputUp', this.onUp, this);
@@ -196,7 +176,8 @@ var Progress = function (_Phaser$Group) {
     onUp() {
         this.swapChildren(this.bgPressed, this.bgSprite);
         this.swapChildren(this.outlinePressed, this.outlineSprite);
-         this.pressFunction();
+
+        this.pressFunction();
     }
     onDown() {
         this.swapChildren(this.bgPressed, this.bgSprite);
@@ -206,7 +187,8 @@ var Progress = function (_Phaser$Group) {
         this.outlineSprite.width = newWidth;
         this.bgSprite.width = newWidth - this.strokeLength;
         this.barSprite.width = newWidth - this.strokeLength;
-         this.barSprite.x = this.getBarXPosition(newWidth);
+
+        this.barSprite.x = this.getBarXPosition(newWidth);
     }
     setHeight(newHeight) {
         this.outlineSprite.height = newHeight;
@@ -214,77 +196,58 @@ var Progress = function (_Phaser$Group) {
         this.barSprite.height = newHeight;
         this.setTextSizeToBarSize();
     }
-     getBarXAnchor() {
+
+    getBarXAnchor() {
         return (this.barShrinksTowardsLeft) ? 0 : 1;
     }
     getBarXPosition(newWidth) {
         if (!newWidth) newWidth = this.width;
         return (this.barShrinksTowardsLeft) ? -newWidth / 2 + this.strokeLength / 2 : newWidth / 2 - this.strokeLength / 2;
     }
-     static densityPixels(pixel) {
+
+    static densityPixels(pixel) {
         return pixel * window.window.devicePixelRatio;
     }
     */
 
-    _createClass(Progress, [{
-        key: 'setText',
-        value: function setText() {
-            var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-            var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    setText(text = '', style = null) {
+        this.text.setText(text);
 
-            this.text.setText(text);
-
-            if (style) {
-                this.text.setStyle(style);
-            }
+        if (style) {
+            this.text.setStyle(style);
         }
-    }, {
-        key: '_applyFrontGraphicColor',
-        value: function _applyFrontGraphicColor() {
-            //allow Bar's color to change at different progressPercentageRemaining values
-            if (typeof this._frontGraphicColor != 'string') {
-                this._frontGraphicColor.sort(function (a, b) {
-                    return a.threshold - b.threshold;
-                });
+    }
 
-                //loop thru all the elements in the barColor array, starting at the smallest theshold. If _progress is under a threshold, set the color and exit the loop.
-                for (var i = 0; i < this._frontGraphicColor.length; i++) {
-                    var barColorInstance = this._frontGraphicColor[i];
-                    if (this._progress <= barColorInstance.threshold) {
-                        this.barSprite.tint = barColorInstance.color;
-                        break;
-                    }
+    _applyFrontGraphicColor() {
+        //allow Bar's color to change at different progressPercentageRemaining values
+        if (typeof this._frontGraphicColor != 'string') {
+            this._frontGraphicColor.sort(function(a, b) {
+                return a.threshold - b.threshold;
+            });
+
+            //loop thru all the elements in the barColor array, starting at the smallest theshold. If _progress is under a threshold, set the color and exit the loop.
+            for (var i = 0; i < this._frontGraphicColor.length; i++) {
+                const barColorInstance = this._frontGraphicColor[i];
+                if (this._progress <= barColorInstance.threshold) {
+                    this.barSprite.tint = barColorInstance.color;
+                    break;
                 }
-            } else {
-                this.frontGraphic.tint = this._frontGraphicColor;
             }
+        } else {
+            this.frontGraphic.tint = this._frontGraphicColor;
         }
-    }]);
+    }
 
-    return Progress;
-}(Phaser.Group);
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Progress;
 
-exports.default = Progress;
+
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 /*
  * Star
  * ====
@@ -292,450 +255,336 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * Individual star paritcles in the background star emitters
  */
 
-var Star = function (_Phaser$Particle) {
-    _inherits(Star, _Phaser$Particle);
+class Star extends Phaser.Particle {
 
-    function Star(game, x, y) {
-        _classCallCheck(this, Star);
+    constructor(game, x, y) {
+        super(game, x, y, Star.getTexture(game));
 
-        var _this = _possibleConstructorReturn(this, (Star.__proto__ || Object.getPrototypeOf(Star)).call(this, game, x, y, Star.getTexture(game)));
-
-        _this.checkWorldBounds = true;
-        _this.events.onOutOfBounds.add(_this.__resetPos, _this);
-        return _this;
+        this.checkWorldBounds = true;
+        this.events.onOutOfBounds.add(this.__resetPos, this);
     }
 
-    _createClass(Star, [{
-        key: '__resetPos',
-        value: function __resetPos() {
-            this.x = this.game.world.width * Math.random();
-            this.y = 0;
-        }
-    }], [{
-        key: 'getTexture',
-        value: function getTexture(game) {
-            var radius = 12;
+    __resetPos() {
+        this.x = this.game.world.width * Math.random();
+        this.y = 0;
+    }
 
-            var bmd = game.add.bitmapData(128, 128);
-            bmd.circle(radius, radius, radius, 'rgb(255,255,255)');
-            return bmd;
-        }
-    }]);
+    static getTexture(game) {
+        const radius = 12;
 
-    return Star;
-}(Phaser.Particle);
+        var bmd = game.add.bitmapData(128, 128);
+        bmd.circle(radius, radius, radius, 'rgb(255,255,255)');
+        return bmd;
+    }
 
-exports.default = Star;
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Star;
+
+
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 /*
  * Toast
  */
 
-var Toast = function (_Phaser$Group) {
-    _inherits(Toast, _Phaser$Group);
+class Toast extends Phaser.Group {
 
-    function Toast(game, textStr, btn) {
-        var fontStyle = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : game.fonts.smallText;
-        var duration = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : textStr.length * 50;
-        var fadeDuration = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 200;
+    constructor(game, textStr, btn, fontStyle = game.fonts.smallText, duration = textStr.length * 50, fadeDuration = 200) {
+        super(game);
 
-        _classCallCheck(this, Toast);
+        this.fadeDuration = fadeDuration;
+        this.margin = this.game.dimen.margin.sideOfScreen / 2;
 
-        var _this = _possibleConstructorReturn(this, (Toast.__proto__ || Object.getPrototypeOf(Toast)).call(this, game));
-
-        _this.fadeDuration = fadeDuration;
-        _this.margin = _this.game.dimen.margin.sideOfScreen / 2;
-
-        _this.text = _this.game.add.text(0, 0, textStr, fontStyle);
-        _this.text.anchor.setTo(0.5, 0.5);
-        _this.addChild(_this.text);
+        this.text = this.game.add.text(0, 0, textStr, fontStyle);
+        this.text.anchor.setTo(0.5, 0.5);
+        this.addChild(this.text);
 
         if (btn) {
-            _this.btn = btn;
-            _this.btn.height = _this.text.height;
-            _this.btn.scale.x = _this.btn.scale.y;
-            _this.btn.anchor.setTo(0.5, 0.5);
-            _this.btn.top = _this.text.bottom;
-            _this.btn.x = _this.text.x;
-            _this.addChild(_this.btn);
+            this.btn = btn;
+            this.btn.height = this.text.height;
+            this.btn.scale.x = this.btn.scale.y;
+            this.btn.anchor.setTo(0.5, 0.5);
+            this.btn.top = this.text.bottom;
+            this.btn.x = this.text.x;
+            this.addChild(this.btn);
         }
 
-        _this.bg = FactoryUi.getBgGraphic(_this.game, _this.width + _this.margin, _this.height + _this.margin);
-        _this.bg.top = _this.text.top - _this.margin;
-        _this.bg.x = _this.text.x;
-        _this.addChild(_this.bg);
-        _this.sendToBack(_this.bg);
+        this.bg = FactoryUi.getBgGraphic(this.game, this.width + this.margin, this.height + this.margin);
+        this.bg.top = this.text.top - this.margin;
+        this.bg.x = this.text.x;
+        this.addChild(this.bg);
+        this.sendToBack(this.bg);
 
         //size + position overall
-        _this.width = Math.min(_this.bg.width, _this.game.world.width);
-        _this.scale.y = _this.scale.x;
-        _this.x = _this.game.world.centerX;
-        _this.y = _this.game.world.centerY;
+        this.width = Math.min(this.bg.width, this.game.world.width);
+        this.scale.y = this.scale.x;
+        this.x = this.game.world.centerX;
+        this.y = this.game.world.centerY;
 
-        _this.game.time.events.add(duration, _this.startFade, _this);
-        return _this;
+        this.game.time.events.add(duration, this.startFade, this);
     }
 
-    _createClass(Toast, [{
-        key: "startFade",
-        value: function startFade() {
-            if (!this.exists) return;
+    startFade() {
+        if (!this.exists) return;
 
-            this.game.add.tween(this).to({
-                alpha: 0
-            }, this.fadeDuration, Phaser.Easing.Linear.None, true);
-        }
-    }]);
+        this.game.add.tween(this).to({
+            alpha: 0
+        }, this.fadeDuration, Phaser.Easing.Linear.None, true);
+    }
 
-    return Toast;
-}(Phaser.Group);
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Toast;
 
-exports.default = Toast;
+
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(0);
 
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
+class ProgressBar extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */] {
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Progress2 = __webpack_require__(0);
-
-var _Progress3 = _interopRequireDefault(_Progress2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* jshint esversion: 6 */
-
-var ProgressBar = function (_Progress) {
-    _inherits(ProgressBar, _Progress);
-
-    function ProgressBar(game, width, height,
-    //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-    //This must be a function with params (width,height) that returns a graphic
-    getBgGraphicSrc, getFrontGraphicSrc, innerGraphicOffset, frontColor, fontStyle, text) {
-        _classCallCheck(this, ProgressBar);
-
-        return _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, game, width, height, getBgGraphicSrc, getFrontGraphicSrc, innerGraphicOffset, frontColor, fontStyle, text));
+    constructor(game,
+        width, height,
+        //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
+        //This must be a function with params (width,height) that returns a graphic
+        getBgGraphicSrc,
+        getFrontGraphicSrc,
+        innerGraphicOffset,
+        frontColor,
+        fontStyle, text
+    ) {
+        super(game, width, height, getBgGraphicSrc, getFrontGraphicSrc, innerGraphicOffset, frontColor, fontStyle, text);
     }
 
     /*
       Edit this function to change the appearance of the bars. Peruse the bitmap data API for reference
       http://phaser.io/docs/2.6.1/Phaser.BitmapData.html
     */
+    getBarBitmapData(width, height) {
+        const radius = height / 2;
+        var bmd = this.game.add.bitmapData(width, height);
+
+        bmd.circle(radius, radius, radius, '#ffffff');
+        bmd.circle(width - radius, radius, radius, '#ffffff');
+
+        bmd.ctx.fillStyle = '#ffffff'; //bar must have pure white bitmap data in order to be tinted effectively
+        bmd.ctx.beginPath();
+        bmd.ctx.rect(radius, 0, width - radius * 2, height);
+        bmd.ctx.fill();
+
+        return bmd;
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ProgressBar;
 
 
-    _createClass(ProgressBar, [{
-        key: 'getBarBitmapData',
-        value: function getBarBitmapData(width, height) {
-            var radius = height / 2;
-            var bmd = this.game.add.bitmapData(width, height);
-
-            bmd.circle(radius, radius, radius, '#ffffff');
-            bmd.circle(width - radius, radius, radius, '#ffffff');
-
-            bmd.ctx.fillStyle = '#ffffff'; //bar must have pure white bitmap data in order to be tinted effectively
-            bmd.ctx.beginPath();
-            bmd.ctx.rect(radius, 0, width - radius * 2, height);
-            bmd.ctx.fill();
-
-            return bmd;
-        }
-    }]);
-
-    return ProgressBar;
-}(_Progress3.default);
-
-exports.default = ProgressBar;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 /*
 Original: http://jsfiddle.net/lewster32/0yvemxnw/
 */
 //import Progress from './Progress'
 
-var PieProgress = function (_Phaser$Group) {
-    _inherits(PieProgress, _Phaser$Group);
+class PieProgress extends Phaser.Group {
+    constructor(game, x, y, radius, color, angle, text) {
+        super(game, x, y);
 
-    function PieProgress(game, x, y, radius, color, angle, text) {
-        _classCallCheck(this, PieProgress);
+        this._radius = radius;
+        this._progress = 1;
+        this.bmp = this.game.add.bitmapData(radius * 2, radius * 2);
+        this.loadTexture(this.bmp);
 
-        var _this = _possibleConstructorReturn(this, (PieProgress.__proto__ || Object.getPrototypeOf(PieProgress)).call(this, game, x, y));
+        this.anchor.setTo(0.5, 0.5);
+        this.angle = angle || -90;
+        this.color = color || '#fff';
+        this.updateProgress();
 
-        _this._radius = radius;
-        _this._progress = 1;
-        _this.bmp = _this.game.add.bitmapData(radius * 2, radius * 2);
-        _this.loadTexture(_this.bmp);
-
-        _this.anchor.setTo(0.5, 0.5);
-        _this.angle = angle || -90;
-        _this.color = color || '#fff';
-        _this.updateProgress();
-
-        _this._text = _this.game.add.text(0, 0, text, {
+        this._text = this.game.add.text(0, 0, text, {
             font: '26px papercuts',
             fill: '#ffffff',
             stroke: '#535353',
             strokeThickness: 5
         });
-        _this._text.anchor.setTo(0.5, 0.4);
-        _this.addChild(_this._text);
-        _this._text.angle = -_this.angle;
-        return _this;
+        this._text.anchor.setTo(0.5, 0.4);
+        this.addChild(this._text);
+        this._text.angle = -this.angle;
     }
 
-    _createClass(PieProgress, [{
-        key: 'updateProgress',
-        value: function updateProgress() {
-            var progress = this._progress;
-            progress = Phaser.Math.clamp(progress, 0.00001, 0.99999);
+    updateProgress() {
+        var progress = this._progress;
+        progress = Phaser.Math.clamp(progress, 0.00001, 0.99999);
 
-            this.bmp.clear();
-            this.bmp.ctx.fillStyle = this.color;
-            this.bmp.ctx.beginPath();
-            this.bmp.ctx.arc(this._radius, this._radius, this._radius, 0, Math.PI * 2 * progress, true);
-            this.bmp.ctx.lineTo(this._radius, this._radius);
-            this.bmp.ctx.closePath();
-            this.bmp.ctx.fill();
-            this.bmp.dirty = true;
-        }
-    }, {
-        key: 'getTextSprite',
-        value: function getTextSprite() {
-            return this._text;
-        }
-    }, {
-        key: 'setText',
-        value: function setText(val) {
-            this._text.setText(val);
-        }
-    }, {
-        key: 'getRadius',
-        value: function getRadius() {
-            return this._radius;
-        }
-    }, {
-        key: 'setRadius',
-        value: function setRadius(val) {
-            this._radius = val > 0 ? val : 0;
-            this.bmp.resize(this._radius * 2, this._radius * 2);
-            this.updateProgress();
-        }
-    }, {
-        key: 'getProgress',
-        value: function getProgress() {
-            return this._progress;
-        }
-    }, {
-        key: 'setProgress',
-        value: function setProgress(val) {
-            this._progress = Phaser.Math.clamp(val, 0, 1);
-            this.updateProgress();
-        }
-    }]);
+        this.bmp.clear();
+        this.bmp.ctx.fillStyle = this.color;
+        this.bmp.ctx.beginPath();
+        this.bmp.ctx.arc(this._radius, this._radius, this._radius, 0, (Math.PI * 2) * progress, true);
+        this.bmp.ctx.lineTo(this._radius, this._radius);
+        this.bmp.ctx.closePath();
+        this.bmp.ctx.fill();
+        this.bmp.dirty = true;
+    }
 
-    return PieProgress;
-}(Phaser.Group);
+    getTextSprite() {
+        return this._text;
+    }
+    setText(val) {
+        this._text.setText(val);
+    }
 
-exports.default = PieProgress;
+
+
+    getRadius() {
+        return this._radius;
+    }
+    setRadius(val) {
+        this._radius = (val > 0 ? val : 0);
+        this.bmp.resize(this._radius * 2, this._radius * 2);
+        this.updateProgress();
+    }
+
+
+
+    getProgress() {
+        return this._progress;
+    }
+    setProgress(val) {
+        this._progress = Phaser.Math.clamp(val, 0, 1);
+        this.updateProgress();
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = PieProgress;
+
+
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 /*
  * ToggleSlider
  *
  * Provides a pretty slider for displaying settings options
  */
 
-var ToggleSlider = function (_Phaser$Group) {
-    _inherits(ToggleSlider, _Phaser$Group);
+class ToggleSlider extends Phaser.Group {
 
-    function ToggleSlider(game) {
-        var onClickCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
-        var isOn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-        var onColor = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0x42f462;
-        var offColor = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0xffffff;
-        var tweenDuration = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 400;
-        var easing = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : Phaser.Easing.Exponential.In;
-
-        _classCallCheck(this, ToggleSlider);
+    constructor(game, onClickCallback = function() {}, isOn = false,
+        onColor = 0x42f462, offColor = 0xffffff, tweenDuration = 400, easing = Phaser.Easing.Exponential.In) {
+        super(game);
 
         //setup variables
-        var _this = _possibleConstructorReturn(this, (ToggleSlider.__proto__ || Object.getPrototypeOf(ToggleSlider)).call(this, game));
+        this.onColor = onColor;
+        this.offColor = offColor;
+        this.disabledColor = 0xcccccc;
 
-        _this.onColor = onColor;
-        _this.offColor = offColor;
-        _this.disabledColor = 0xcccccc;
-
-        _this.onClickCallback = onClickCallback;
-        _this.isOn = isOn;
-        _this.tweenDuration = tweenDuration;
-        _this.tweenEasing = easing;
-        var width = 50;
-        var radius = 25;
-        var bgHeight = radius / 2;
+        this.onClickCallback = onClickCallback;
+        this.isOn = isOn;
+        this.tweenDuration = tweenDuration;
+        this.tweenEasing = easing;
+        const width = 50;
+        const radius = 25;
+        const bgHeight = radius / 2;
 
         //setup children
-        _this._bg = _this.game.add.graphics();
-        _this._bg.beginFill(0xffffff);
-        _this._bg.drawRoundedRect(-width / 4, 0, width, bgHeight, bgHeight / 2);
-        _this._bg.endFill();
-        _this._bg.x = -_this._bg.width / 4;
-        _this._bg.inputEnabled = true;
-        _this._bg.alpha = 0.5;
+        this._bg = this.game.add.graphics();
+        this._bg.beginFill(0xffffff);
+        this._bg.drawRoundedRect(-width / 4, 0, width, bgHeight, bgHeight / 2);
+        this._bg.endFill();
+        this._bg.x = -this._bg.width / 4;
+        this._bg.inputEnabled = true;
+        this._bg.alpha = 0.5;
 
-        _this._slidingCircle = _this.game.add.graphics();
-        _this._slidingCircle.beginFill(0xffffff);
-        _this._slidingCircle.drawCircle(0, 0, radius);
-        _this._slidingCircle.endFill();
-        _this._slidingCircle.y = bgHeight / 2;
-        _this._slidingCircle.inputEnabled = true;
+        this._slidingCircle = this.game.add.graphics();
+        this._slidingCircle.beginFill(0xffffff);
+        this._slidingCircle.drawCircle(0, 0, radius);
+        this._slidingCircle.endFill();
+        this._slidingCircle.y = bgHeight / 2;
+        this._slidingCircle.inputEnabled = true;
 
         //setup starting state
-        _this.setColor();
-        if (_this.isOn) {
-            _this._slidingCircle.right = _this._bg.right;
+        this.setColor();
+        if (this.isOn) {
+            this._slidingCircle.right = this._bg.right;
         } else {
-            _this._slidingCircle.left = _this._bg.left;
+            this._slidingCircle.left = this._bg.left;
         }
 
         //setup tweens
-        _this._slideRight = _this.game.add.tween(_this._slidingCircle).to({
-            right: _this._bg.x + _this._bg.width
-        }, _this.tweenDuration, _this.tweenEasing);
-        _this._slideLeft = _this.game.add.tween(_this._slidingCircle).to({
-            left: _this._bg.x
-        }, _this.tweenDuration, _this.tweenEasing);
-        var reEnableInput = function reEnableInput() {
+        this._slideRight = this.game.add.tween(this._slidingCircle).to({
+            right: this._bg.x + this._bg.width
+        }, this.tweenDuration, this.tweenEasing);
+        this._slideLeft = this.game.add.tween(this._slidingCircle).to({
+            left: this._bg.x
+        }, this.tweenDuration, this.tweenEasing);
+        const reEnableInput = function() {
             this.inputEnableChildren = true;
             this._slidingCircle.inputEnabled = true;
             this._bg.inputEnabled = true;
 
             this.setColor();
         };
-        _this._slideRight.onComplete.add(reEnableInput, _this);
-        _this._slideLeft.onComplete.add(reEnableInput, _this);
+        this._slideRight.onComplete.add(reEnableInput, this);
+        this._slideLeft.onComplete.add(reEnableInput, this);
 
         //add children
-        _this.addChild(_this._bg);
-        _this.addChild(_this._slidingCircle);
+        this.addChild(this._bg);
+        this.addChild(this._slidingCircle);
 
         //enable input actions
-        _this.inputEnableChildren = true;
-        _this.onChildInputDown.add(_this.toggled, _this);
-        return _this;
+        this.inputEnableChildren = true;
+        this.onChildInputDown.add(this.toggled, this);
     }
 
-    _createClass(ToggleSlider, [{
-        key: "setColor",
-        value: function setColor() {
-            var color = this.isOn ? this.onColor : this.offColor;
-            this._bg.tint = color;
-            this._slidingCircle.tint = color;
+    setColor() {
+        const color = (this.isOn) ? this.onColor : this.offColor;
+        this._bg.tint = color;
+        this._slidingCircle.tint = color;
+    }
+
+    toggled() {
+        this.isOn = !this.isOn;
+        this.onClickCallback(this.isOn);
+
+        //disable toggle while slidding
+        this.inputEnableChildren = false;
+        this._slidingCircle.inputEnabled = false;
+        this._bg.inputEnabled = false;
+
+        this._bg.tint = this.disabledColor;
+        this._slidingCircle.tint = this.disabledColor;
+
+        if (!this.isOn) {
+            this._slideLeft.start();
+        } else {
+            this._slideRight.start();
         }
-    }, {
-        key: "toggled",
-        value: function toggled() {
-            this.isOn = !this.isOn;
-            this.onClickCallback(this.isOn);
+    }
 
-            //disable toggle while slidding
-            this.inputEnableChildren = false;
-            this._slidingCircle.inputEnabled = false;
-            this._bg.inputEnabled = false;
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ToggleSlider;
 
-            this._bg.tint = this.disabledColor;
-            this._slidingCircle.tint = this.disabledColor;
 
-            if (!this.isOn) {
-                this._slideLeft.start();
-            } else {
-                this._slideRight.start();
-            }
-        }
-    }]);
-
-    return ToggleSlider;
-}(Phaser.Group);
-
-exports.default = ToggleSlider;
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* jshint esversion: 6 */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Star__ = __webpack_require__(1);
+/* jshint esversion: 6 */
 
 /*
  * Stars
@@ -745,18 +594,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
  * TODO: star particles have infinite life, choose a random position when falling offscreen, iron out kinks in the vals used for para
  */
 
-var _Star = __webpack_require__(1);
 
-var _Star2 = _interopRequireDefault(_Star);
+class Stars {
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Stars = function () {
-    function Stars(game) {
-        _classCallCheck(this, Stars);
-
+    constructor(game) {
         this.game = game;
 
         this.maxNumParticles = 75;
@@ -771,153 +612,100 @@ var Stars = function () {
     }
 
     //private function to create and setup particle properties
+    setupStars() {
+        //	Emitters have a center point and a width/height, which extends from their center point to the left/right and up/down
+        this.layerOneStars = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, this.maxNumParticles);
+        this.layerTwoStars = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, this.maxNumParticles);
+        this.layerThreeStars = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, this.maxNumParticles);
+
+        this.__setupEmitter(this.layerOneStars, 1);
+        this.__setupEmitter(this.layerTwoStars, 2);
+        this.__setupEmitter(this.layerThreeStars, 3);
+    }
+
+    /**
+    relativeDistToPlayer = smaller when stars need to be closer to player (bigger, faster)
+    */
+    __setupEmitter(emitter, relativeDistToPlayer) {
+        emitter.particleClass = __WEBPACK_IMPORTED_MODULE_0__Star__["a" /* default */];
+        emitter.makeParticles();
+
+        emitter.x = this.game.world.centerX;
+        emitter.y = this.game.world.centerY;
+
+        emitter.width = this.game.world.width;
+        emitter.height = this.game.world.height;
+
+        emitter.gravity.set(0, 0);
+        emitter.setRotation(0, 0);
+
+        emitter.minParticleSpeed.set(0, this.baseMinStarSpeed - this.baseMinStarSpeed / relativeDistToPlayer);
+        emitter.maxParticleSpeed.set(0, 5 * this.baseMaxStarSpeed - this.baseMaxStarSpeed / relativeDistToPlayer);
+
+        emitter.setAlpha(0.75 - relativeDistToPlayer / 10, 1 - relativeDistToPlayer / 10);
+
+        emitter.minParticleScale = .1 - relativeDistToPlayer / 100;
+        emitter.maxParticleScale = .5 - relativeDistToPlayer / 100;
+
+        emitter.setAlpha(0.75, 1);
+    }
 
 
-    _createClass(Stars, [{
-        key: 'setupStars',
-        value: function setupStars() {
-            //	Emitters have a center point and a width/height, which extends from their center point to the left/right and up/down
-            this.layerOneStars = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, this.maxNumParticles);
-            this.layerTwoStars = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, this.maxNumParticles);
-            this.layerThreeStars = this.game.add.emitter(this.game.world.centerX, this.game.world.centerY, this.maxNumParticles);
+    //expose showStars on a global level so other states can take advantage of it
+    showStars() {
+        /*
+        const explodeLife = this.lifespan / 2, explodeNumStars = this.maxNumParticles / 2;
+        //set some stars onto the screen all at once to populate it a bit before flow can get established
+        this.layerOneStars.start(true, explodeLife, null, explodeNumStars);
+        this.layerOneStars.flow(this.lifespan, this.emitFreq, this.numEmitPer, -1, true); //flow(lifespan, frequency, quantity, total, immediate)
 
-            this.__setupEmitter(this.layerOneStars, 1);
-            this.__setupEmitter(this.layerTwoStars, 2);
-            this.__setupEmitter(this.layerThreeStars, 3);
-        }
+        this.layerTwoStars.start(true, explodeLife, null, explodeNumStars);
+        this.layerTwoStars.flow(this.lifespan, this.emitFreq, this.numEmitPer, -1, true);
 
-        /**
-        relativeDistToPlayer = smaller when stars need to be closer to player (bigger, faster)
+        this.layerThreeStars.start(true, explodeLife, null, explodeNumStars);
+        this.layerThreeStars.flow(this.lifespan, this.emitFreq, this.numEmitPer, -1, true);
         */
 
-    }, {
-        key: '__setupEmitter',
-        value: function __setupEmitter(emitter, relativeDistToPlayer) {
-            emitter.particleClass = _Star2.default;
-            emitter.makeParticles();
+        this.layerOneStars.explode(0, this.maxNumParticles);
+        this.layerTwoStars.explode(0, this.maxNumParticles);
+        this.layerThreeStars.explode(0, this.maxNumParticles);
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Stars;
 
-            emitter.x = this.game.world.centerX;
-            emitter.y = this.game.world.centerY;
 
-            emitter.width = this.game.world.width;
-            emitter.height = this.game.world.height;
-
-            emitter.gravity.set(0, 0);
-            emitter.setRotation(0, 0);
-
-            emitter.minParticleSpeed.set(0, this.baseMinStarSpeed - this.baseMinStarSpeed / relativeDistToPlayer);
-            emitter.maxParticleSpeed.set(0, 5 * this.baseMaxStarSpeed - this.baseMaxStarSpeed / relativeDistToPlayer);
-
-            emitter.setAlpha(0.75 - relativeDistToPlayer / 10, 1 - relativeDistToPlayer / 10);
-
-            emitter.minParticleScale = .1 - relativeDistToPlayer / 100;
-            emitter.maxParticleScale = .5 - relativeDistToPlayer / 100;
-
-            emitter.setAlpha(0.75, 1);
-        }
-
-        //expose showStars on a global level so other states can take advantage of it
-
-    }, {
-        key: 'showStars',
-        value: function showStars() {
-            /*
-            const explodeLife = this.lifespan / 2, explodeNumStars = this.maxNumParticles / 2;
-            //set some stars onto the screen all at once to populate it a bit before flow can get established
-            this.layerOneStars.start(true, explodeLife, null, explodeNumStars);
-            this.layerOneStars.flow(this.lifespan, this.emitFreq, this.numEmitPer, -1, true); //flow(lifespan, frequency, quantity, total, immediate)
-             this.layerTwoStars.start(true, explodeLife, null, explodeNumStars);
-            this.layerTwoStars.flow(this.lifespan, this.emitFreq, this.numEmitPer, -1, true);
-             this.layerThreeStars.start(true, explodeLife, null, explodeNumStars);
-            this.layerThreeStars.flow(this.lifespan, this.emitFreq, this.numEmitPer, -1, true);
-            */
-
-            this.layerOneStars.explode(0, this.maxNumParticles);
-            this.layerTwoStars.explode(0, this.maxNumParticles);
-            this.layerThreeStars.explode(0, this.maxNumParticles);
-        }
-    }]);
-
-    return Stars;
-}();
-
-exports.default = Stars;
 
 /***/ }),
 /* 7 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__particles_Star_js__ = __webpack_require__(1);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Star", function() { return __WEBPACK_IMPORTED_MODULE_0__particles_Star_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__particles_Stars_js__ = __webpack_require__(6);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Stars", function() { return __WEBPACK_IMPORTED_MODULE_1__particles_Stars_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Progress_Progress_js__ = __webpack_require__(0);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Progress", function() { return __WEBPACK_IMPORTED_MODULE_2__Progress_Progress_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Progress_ProgressPie_js__ = __webpack_require__(4);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressPie", function() { return __WEBPACK_IMPORTED_MODULE_3__Progress_ProgressPie_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Progress_ProgressBar_js__ = __webpack_require__(3);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressBar", function() { return __WEBPACK_IMPORTED_MODULE_4__Progress_ProgressBar_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Slider_ToggleSlider_js__ = __webpack_require__(5);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ToggleSlider", function() { return __WEBPACK_IMPORTED_MODULE_5__Slider_ToggleSlider_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Misc_Toast_js__ = __webpack_require__(2);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Toast", function() { return __WEBPACK_IMPORTED_MODULE_6__Misc_Toast_js__["a"]; });
 
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
 
-var _Star = __webpack_require__(1);
 
-Object.defineProperty(exports, 'Star', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_Star).default;
-    }
-});
 
-var _Stars = __webpack_require__(6);
 
-Object.defineProperty(exports, 'Stars', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_Stars).default;
-    }
-});
 
-var _Progress = __webpack_require__(0);
 
-Object.defineProperty(exports, 'Progress', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_Progress).default;
-    }
-});
 
-var _ProgressPie = __webpack_require__(4);
 
-Object.defineProperty(exports, 'ProgressPie', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_ProgressPie).default;
-    }
-});
 
-var _ProgressBar = __webpack_require__(3);
-
-Object.defineProperty(exports, 'ProgressBar', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_ProgressBar).default;
-    }
-});
-
-var _ToggleSlider = __webpack_require__(5);
-
-Object.defineProperty(exports, 'ToggleSlider', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_ToggleSlider).default;
-    }
-});
-
-var _Toast = __webpack_require__(2);
-
-Object.defineProperty(exports, 'Toast', {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_Toast).default;
-    }
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ })
 /******/ ]);
