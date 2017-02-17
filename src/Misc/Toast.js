@@ -1,8 +1,6 @@
 /*
  * Toast
  */
-import Phaser from 'phaser-ce';
-
 export default class Toast extends Phaser.Group {
 
     constructor(game, textStr, btn, fontStyle = game.fonts.smallText, duration = textStr.length * 50, fadeDuration = 200) {

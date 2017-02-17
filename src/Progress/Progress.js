@@ -2,8 +2,6 @@
   Progress
   Parent to UI elements that visualize a range of data, eg a ProgressBar or ProgressPie
 */
-import Phaser from 'phaser-ce';
-
 
 export default class Progress extends Phaser.Group {
 

@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "phaser-ce": "^2.7.0",
-    "phaser-ui": "../"
+    "phaser-ui": "file:../"
   },
   "devDependencies": {
     "babel-plugin-transform-runtime": "^6.22.0",
