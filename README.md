@@ -7,7 +7,6 @@ Currently includes
 - ProgressBar
 - ProgressPie (radial progress bar)
 - Toast (in-game notification)
-- Stars (background particle generator for making Stars)
 - ToggleSlider
 
 to use run the following in your game's `package.json` directory:
