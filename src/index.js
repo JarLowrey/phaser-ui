@@ -1,6 +1,4 @@
-
-//export {default as Star}from './particles/Star.js';
-//export {default as Stars} from './particles/Stars.js';
+//bundle all the individual files together for export
 
 export {default as Progress} from './Progress/Progress.js';
 export {default as ProgressPie} from './Progress/ProgressPie.js';
