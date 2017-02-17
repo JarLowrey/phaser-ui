@@ -8,6 +8,7 @@
  * TODO: star particles have infinite life, choose a random position when falling offscreen, iron out kinks in the vals used for para
  */
 import Star from './Star';
+import Phaser from 'phaser-ce';
 
 export default class Stars {
 

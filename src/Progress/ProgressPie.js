@@ -2,6 +2,7 @@
 Original: http://jsfiddle.net/lewster32/0yvemxnw/
 */
 //import Progress from './Progress'
+import Phaser from 'phaser-ce';
 
 export default class PieProgress extends Phaser.Group {
     constructor(game, x, y, radius, color, angle, text) {

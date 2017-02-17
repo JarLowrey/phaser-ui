@@ -1,4 +1,5 @@
 import Progress from './Progress'
+import Phaser from 'phaser-ce';
 
 export default class ProgressBar extends Progress {
 

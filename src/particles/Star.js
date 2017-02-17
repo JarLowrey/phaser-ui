@@ -4,7 +4,8 @@
  *
  * Individual star paritcles in the background star emitters
  */
-
+import Phaser from 'phaser-ce';
+console.log(Phaser)
 export default class Star extends Phaser.Particle {
 
     constructor(game, x, y) {

@@ -1,6 +1,7 @@
 /*
  * Toast
  */
+import Phaser from 'phaser-ce';
 
 export default class Toast extends Phaser.Group {
 
