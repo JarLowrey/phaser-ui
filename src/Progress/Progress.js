@@ -9,24 +9,22 @@ export default class Progress extends Phaser.Group {
         return this._progress;
     }
     set progress(val) {
-        if (val > 100) {
-            val = 100;
+        if (val > Progress.MaxProgress) {
+            val = Progress.MaxProgress;
+        } else if (val < Progress.MinProgress) {
+            val = Progress.MinProgress;
         }
         this._progress = val;
 
-        //artifacts show up if you crop <=0. Thus hide it instead
-        this.barSprite.visible = val > 0;
-        if (val > 0) {
-            this._applyFrontGraphicColor();
+        this._applyCrop();
+    }
 
-            //Create the cropping parameters: set the new, cropped image properties.
-            const newWidth = (val / 100) * this.width;
-            const x = (this.barShrinksTowardsLeft) ? 0 : this.width - newWidth;
-            const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
-
-            //perform the crop!
-            this.frontGraphic.crop(cropRect);
-        }
+    set reversed(val) {
+        this._reversed = val;
+        this._applyCrop();
+    }
+    get reversed() {
+        return this._reversed;
     }
 
     get frontGraphicColor() {
@@ -34,44 +32,55 @@ export default class Progress extends Phaser.Group {
     }
     //either a hex value string, or a list of objects where each object has a (percentage) 'threshold' and a 'color'
     set frontGraphicColor(val) {
+        if (Array.isArray(val)) {
+            val.sort(function(a, b) {
+                return a.threshold - b.threshold;
+            });
+        }
         this._frontGraphicColor = val;
-        this._applyFrontGraphicColor();
+
+        this.frontGraphic.tint = this._getColor();
     }
 
     constructor(game,
         width, height,
         //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
         //This must be a function with params (width,height) that returns a graphic
-        getBgGraphicSrc,
-        getFrontGraphicSrc,
+        texture,
         innerGraphicOffset = 0,
+        text = '',
         frontColor = [{
-            'threshold': 25,
+            'threshold': .25,
             'color': '0xff0000'
         }, {
-            'threshold': 50,
+            'threshold': .5,
             'color': '0xffff00'
         }, {
-            'threshold': 100,
+            'threshold': 1,
             'color': '0x00ff00'
         }],
-        fontStyle = '', text = ''
+        fontStyle = ''
     ) {
         super(game);
 
+        Progress.MaxProgress = 0.999999;
+        Progress.MinProgress = 0.000001;
+
         //save useful vars
-        this.frontGraphicFn = getFrontGraphicSrc;
         this.innerGraphicOffset = innerGraphicOffset;
 
         // create the sprites
-        this.bgGraphic = getBgGraphicSrc(width, height);
+        this.bgBmd = this.getBitmapData(texture, width, height);
+        this.bgGraphic = this.game.add.sprite(0, 0, this.bgBmd);
         this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-        this.frontGraphic = getFrontGraphicSrc(width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontBmd = this.getBitmapData(texture, width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontGraphic = this.game.add.sprite(0, 0, this.frontBmd);
         this.frontGraphic.anchor.setTo(0.5, 0.5);
 
-        this.text = this.game.add.text(0, 0, text, fontStyle);
+        this.text = this.game.add.text(0, 0);
         this.text.anchor.setTo(0.5, 0.5);
+        this.setText(text, fontStyle);
 
         this.addChild(this.bgGraphic);
         this.addChild(this.frontGraphic);
@@ -79,7 +88,23 @@ export default class Progress extends Phaser.Group {
 
         //set sprite properties
         this.frontGraphicColor = frontColor;
-        this.progress = 100;
+        this.progress = 1.0;
+        this.reversed = false;
+
+        this.text.addColor('#ffff00', 0);
+    }
+
+    getBitmapData(input, width, height) {
+        let bmd = null;
+
+        if (typeof input == 'function') {
+            bmd = input.bind(this)(width, height);
+        } else if (input instanceof Phaser.Image) {
+            bmd = this.game.make.bitmapData(width, height);
+            bmd.copy(input);
+        }
+
+        return bmd;
     }
 
     /*
@@ -110,31 +135,6 @@ export default class Progress extends Phaser.Group {
         this.swapChildren(this.bgPressed, this.bgSprite);
         this.swapChildren(this.outlinePressed, this.outlineSprite);
     }
-    setWidth(newWidth) {
-        this.outlineSprite.width = newWidth;
-        this.bgSprite.width = newWidth - this.strokeLength;
-        this.barSprite.width = newWidth - this.strokeLength;
-
-        this.barSprite.x = this.getBarXPosition(newWidth);
-    }
-    setHeight(newHeight) {
-        this.outlineSprite.height = newHeight;
-        this.bgSprite.height = newHeight;
-        this.barSprite.height = newHeight;
-        this.setTextSizeToBarSize();
-    }
-
-    getBarXAnchor() {
-        return (this.barShrinksTowardsLeft) ? 0 : 1;
-    }
-    getBarXPosition(newWidth) {
-        if (!newWidth) newWidth = this.width;
-        return (this.barShrinksTowardsLeft) ? -newWidth / 2 + this.strokeLength / 2 : newWidth / 2 - this.strokeLength / 2;
-    }
-
-    static densityPixels(pixel) {
-        return pixel * window.window.devicePixelRatio;
-    }
     */
 
     setText(text = '', style = null) {
@@ -143,26 +143,29 @@ export default class Progress extends Phaser.Group {
         if (style) {
             this.text.setStyle(style);
         }
+        //ensure text does not fall off of graphic
+        this.text.height = Math.max(this.text.height, this.bgGraphic.height);
+        this.text.width = Math.max(this.text.height, this.bgGraphic.width);
+        //this.text.y = this.bgBmd.y;
+        //this.text.x = this.bgBmd.x;
     }
 
-    _applyFrontGraphicColor() {
+    _getColor() {
+        let color = null;
         //allow Bar's color to change at different progressPercentageRemaining values
-        if (typeof this._frontGraphicColor != 'string') {
-            this._frontGraphicColor.sort(function(a, b) {
-                return a.threshold - b.threshold;
-            });
-
+        if (Array.isArray(this._frontGraphicColor)) {
             //loop thru all the elements in the barColor array, starting at the smallest theshold. If _progress is under a threshold, set the color and exit the loop.
             for (var i = 0; i < this._frontGraphicColor.length; i++) {
                 const barColorInstance = this._frontGraphicColor[i];
                 if (this._progress <= barColorInstance.threshold) {
-                    this.barSprite.tint = barColorInstance.color;
+                    color = barColorInstance.color;
                     break;
                 }
             }
         } else {
-            this.frontGraphic.tint = this._frontGraphicColor;
+            color = this._frontGraphicColor;
         }
+        return color;
     }
 
 }

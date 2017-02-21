@@ -1,4 +1,4 @@
-import Progress from './Progress'
+import Progress from './Progress';
 
 export default class ProgressBar extends Progress {
 
@@ -6,31 +6,35 @@ export default class ProgressBar extends Progress {
         width, height,
         //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
         //This must be a function with params (width,height) that returns a graphic
-        getBgGraphicSrc,
-        getFrontGraphicSrc,
+        texture,
         innerGraphicOffset,
         frontColor,
         fontStyle, text
     ) {
-        super(game, width, height, getBgGraphicSrc, getFrontGraphicSrc, innerGraphicOffset, frontColor, fontStyle, text);
+        super(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text);
     }
 
-    /*
-      Edit this function to change the appearance of the bars. Peruse the bitmap data API for reference
-      http://phaser.io/docs/2.6.1/Phaser.BitmapData.html
-    */
-    getBarBitmapData(width, height) {
-        const radius = height / 2;
-        var bmd = this.game.add.bitmapData(width, height);
+    _applyCrop() {
+        //artifacts show up if you crop <=0. Thus hide it instead
+        this.frontGraphic.visible = this._progress != Progress.MinProgress;
 
-        bmd.circle(radius, radius, radius, '#ffffff');
-        bmd.circle(width - radius, radius, radius, '#ffffff');
+        if (this.frontGraphic.visible) {
+            this.frontGraphic.tint = this._getColor();
 
-        bmd.ctx.fillStyle = '#ffffff'; //bar must have pure white bitmap data in order to be tinted effectively
-        bmd.ctx.beginPath();
-        bmd.ctx.rect(radius, 0, width - radius * 2, height);
-        bmd.ctx.fill();
+            //Create the cropping parameters: set the new, cropped image properties.
+            const newWidth = this._progress * this.width;
+            const x = (this.reversed) ? this.width - newWidth : 0;
+            const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
 
-        return bmd;
+            //perform the crop!
+            this.frontGraphic.crop(cropRect);
+
+            //position the newly cropped object
+            if (this.reversed) {
+                this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset;
+            } else {
+                this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset;
+            }
+        }
     }
 }

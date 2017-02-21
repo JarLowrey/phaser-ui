@@ -1,72 +1,42 @@
 /*
 Original: http://jsfiddle.net/lewster32/0yvemxnw/
 */
-import Progress from './Progress'
+import Progress from './Progress';
 
-export default class PieProgress extends Phaser.Group {
-    constructor(game, x, y, radius, color, angle, text) {
-        super(game, x, y);
+export default class PieProgress extends Progress {
+    constructor(game,
+        radius,
+        texture,
+        innerGraphicOffset,
+        text, frontColor, fontStyle) {
 
-        this._radius = radius;
-        this._progress = 1;
-        this.bmp = this.game.add.bitmapData(radius * 2, radius * 2);
-        this.loadTexture(this.bmp);
+        super(game, radius, radius, texture,
+            innerGraphicOffset,
+            text, frontColor, fontStyle);
 
-        this.anchor.setTo(0.5, 0.5);
-        this.angle = angle || -90;
-        this.color = color || '#fff';
-        this.updateProgress();
-
-        this._text = this.game.add.text(0, 0, text, {
-            font: '26px papercuts',
-            fill: '#ffffff',
-            stroke: '#535353',
-            strokeThickness: 5
-        });
-        this._text.anchor.setTo(0.5, 0.4);
-        this.addChild(this._text);
-        this._text.angle = -this.angle;
+        this.frontGraphic.angle = -90;
     }
 
-    updateProgress() {
-        var progress = this._progress;
-        progress = Phaser.Math.clamp(progress, 0.00001, 0.99999);
+    _applyCrop() {
+        this.frontGraphic.visible = this._progress != Progress.MaxProgress;
+        if (this.frontGraphic.visible) {
 
-        this.bmp.clear();
-        this.bmp.ctx.fillStyle = this.color;
-        this.bmp.ctx.beginPath();
-        this.bmp.ctx.arc(this._radius, this._radius, this._radius, 0, (Math.PI * 2) * progress, true);
-        this.bmp.ctx.lineTo(this._radius, this._radius);
-        this.bmp.ctx.closePath();
-        this.bmp.ctx.fill();
-        this.bmp.dirty = true;
+            let radius = this.frontGraphic.height / 2;
+            let color = this._getColor();
+            //let color = Phaser.Color.valueToColor(this._getColor());
+            //color = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+            let new_angle = (this.reversed) ? (Math.PI * 2) * (1 - this.progress) : (Math.PI * 2) * this.progress;
+
+            this.frontBmd.clear();
+            this.frontBmd.ctx.fillStyle = color;
+            this.frontBmd.ctx.beginPath();
+            this.frontBmd.ctx.arc(radius, radius, radius, 0, new_angle, true);
+            this.frontBmd.ctx.lineTo(radius, radius);
+            this.frontBmd.ctx.closePath();
+            this.frontBmd.ctx.fill();
+
+            this.frontBmd.update();
+        }
     }
 
-    getTextSprite() {
-        return this._text;
-    }
-    setText(val) {
-        this._text.setText(val);
-    }
-
-
-
-    getRadius() {
-        return this._radius;
-    }
-    setRadius(val) {
-        this._radius = (val > 0 ? val : 0);
-        this.bmp.resize(this._radius * 2, this._radius * 2);
-        this.updateProgress();
-    }
-
-
-
-    getProgress() {
-        return this._progress;
-    }
-    setProgress(val) {
-        this._progress = Phaser.Math.clamp(val, 0, 1);
-        this.updateProgress();
-    }
 }

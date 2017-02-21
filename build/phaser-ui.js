@@ -92,24 +92,22 @@ class Progress extends Phaser.Group {
         return this._progress;
     }
     set progress(val) {
-        if (val > 100) {
-            val = 100;
+        if (val > Progress.MaxProgress) {
+            val = Progress.MaxProgress;
+        } else if (val < Progress.MinProgress) {
+            val = Progress.MinProgress;
         }
         this._progress = val;
 
-        //artifacts show up if you crop <=0. Thus hide it instead
-        this.barSprite.visible = val > 0;
-        if (val > 0) {
-            this._applyFrontGraphicColor();
+        this._applyCrop();
+    }
 
-            //Create the cropping parameters: set the new, cropped image properties.
-            const newWidth = (val / 100) * this.width;
-            const x = (this.barShrinksTowardsLeft) ? 0 : this.width - newWidth;
-            const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
-
-            //perform the crop!
-            this.frontGraphic.crop(cropRect);
-        }
+    set reversed(val) {
+        this._reversed = val;
+        this._applyCrop();
+    }
+    get reversed() {
+        return this._reversed;
     }
 
     get frontGraphicColor() {
@@ -117,44 +115,55 @@ class Progress extends Phaser.Group {
     }
     //either a hex value string, or a list of objects where each object has a (percentage) 'threshold' and a 'color'
     set frontGraphicColor(val) {
+        if (Array.isArray(val)) {
+            val.sort(function(a, b) {
+                return a.threshold - b.threshold;
+            });
+        }
         this._frontGraphicColor = val;
-        this._applyFrontGraphicColor();
+
+        this.frontGraphic.tint = this._getColor();
     }
 
     constructor(game,
         width, height,
         //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
         //This must be a function with params (width,height) that returns a graphic
-        getBgGraphicSrc,
-        getFrontGraphicSrc,
+        texture,
         innerGraphicOffset = 0,
+        text = '',
         frontColor = [{
-            'threshold': 25,
+            'threshold': .25,
             'color': '0xff0000'
         }, {
-            'threshold': 50,
+            'threshold': .5,
             'color': '0xffff00'
         }, {
-            'threshold': 100,
+            'threshold': 1,
             'color': '0x00ff00'
         }],
-        fontStyle = '', text = ''
+        fontStyle = ''
     ) {
         super(game);
 
+        Progress.MaxProgress = 0.999999;
+        Progress.MinProgress = 0.000001;
+
         //save useful vars
-        this.frontGraphicFn = getFrontGraphicSrc;
         this.innerGraphicOffset = innerGraphicOffset;
 
         // create the sprites
-        this.bgGraphic = getBgGraphicSrc(width, height);
+        this.bgBmd = this.getBitmapData(texture, width, height);
+        this.bgGraphic = this.game.add.sprite(0, 0, this.bgBmd);
         this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-        this.frontGraphic = getFrontGraphicSrc(width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontBmd = this.getBitmapData(texture, width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontGraphic = this.game.add.sprite(0, 0, this.frontBmd);
         this.frontGraphic.anchor.setTo(0.5, 0.5);
 
-        this.text = this.game.add.text(0, 0, text, fontStyle);
+        this.text = this.game.add.text(0, 0);
         this.text.anchor.setTo(0.5, 0.5);
+        this.setText(text, fontStyle);
 
         this.addChild(this.bgGraphic);
         this.addChild(this.frontGraphic);
@@ -162,7 +171,23 @@ class Progress extends Phaser.Group {
 
         //set sprite properties
         this.frontGraphicColor = frontColor;
-        this.progress = 100;
+        this.progress = 1.0;
+        this.reversed = false;
+
+        this.text.addColor('#ffff00', 0);
+    }
+
+    getBitmapData(input, width, height) {
+        let bmd = null;
+
+        if (typeof input == 'function') {
+            bmd = input.bind(this)(width, height);
+        } else if (input instanceof Phaser.Image) {
+            bmd = this.game.make.bitmapData(width, height);
+            bmd.copy(input);
+        }
+
+        return bmd;
     }
 
     /*
@@ -193,31 +218,6 @@ class Progress extends Phaser.Group {
         this.swapChildren(this.bgPressed, this.bgSprite);
         this.swapChildren(this.outlinePressed, this.outlineSprite);
     }
-    setWidth(newWidth) {
-        this.outlineSprite.width = newWidth;
-        this.bgSprite.width = newWidth - this.strokeLength;
-        this.barSprite.width = newWidth - this.strokeLength;
-
-        this.barSprite.x = this.getBarXPosition(newWidth);
-    }
-    setHeight(newHeight) {
-        this.outlineSprite.height = newHeight;
-        this.bgSprite.height = newHeight;
-        this.barSprite.height = newHeight;
-        this.setTextSizeToBarSize();
-    }
-
-    getBarXAnchor() {
-        return (this.barShrinksTowardsLeft) ? 0 : 1;
-    }
-    getBarXPosition(newWidth) {
-        if (!newWidth) newWidth = this.width;
-        return (this.barShrinksTowardsLeft) ? -newWidth / 2 + this.strokeLength / 2 : newWidth / 2 - this.strokeLength / 2;
-    }
-
-    static densityPixels(pixel) {
-        return pixel * window.window.devicePixelRatio;
-    }
     */
 
     setText(text = '', style = null) {
@@ -226,26 +226,29 @@ class Progress extends Phaser.Group {
         if (style) {
             this.text.setStyle(style);
         }
+        //ensure text does not fall off of graphic
+        this.text.height = Math.max(this.text.height, this.bgGraphic.height);
+        this.text.width = Math.max(this.text.height, this.bgGraphic.width);
+        //this.text.y = this.bgBmd.y;
+        //this.text.x = this.bgBmd.x;
     }
 
-    _applyFrontGraphicColor() {
+    _getColor() {
+        let color = null;
         //allow Bar's color to change at different progressPercentageRemaining values
-        if (typeof this._frontGraphicColor != 'string') {
-            this._frontGraphicColor.sort(function(a, b) {
-                return a.threshold - b.threshold;
-            });
-
+        if (Array.isArray(this._frontGraphicColor)) {
             //loop thru all the elements in the barColor array, starting at the smallest theshold. If _progress is under a threshold, set the color and exit the loop.
             for (var i = 0; i < this._frontGraphicColor.length; i++) {
                 const barColorInstance = this._frontGraphicColor[i];
                 if (this._progress <= barColorInstance.threshold) {
-                    this.barSprite.tint = barColorInstance.color;
+                    color = barColorInstance.color;
                     break;
                 }
             }
         } else {
-            this.frontGraphic.tint = this._frontGraphicColor;
+            color = this._frontGraphicColor;
         }
+        return color;
     }
 
 }
@@ -325,32 +328,36 @@ class ProgressBar extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default
         width, height,
         //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
         //This must be a function with params (width,height) that returns a graphic
-        getBgGraphicSrc,
-        getFrontGraphicSrc,
+        texture,
         innerGraphicOffset,
         frontColor,
         fontStyle, text
     ) {
-        super(game, width, height, getBgGraphicSrc, getFrontGraphicSrc, innerGraphicOffset, frontColor, fontStyle, text);
+        super(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text);
     }
 
-    /*
-      Edit this function to change the appearance of the bars. Peruse the bitmap data API for reference
-      http://phaser.io/docs/2.6.1/Phaser.BitmapData.html
-    */
-    getBarBitmapData(width, height) {
-        const radius = height / 2;
-        var bmd = this.game.add.bitmapData(width, height);
+    _applyCrop() {
+        //artifacts show up if you crop <=0. Thus hide it instead
+        this.frontGraphic.visible = this._progress != __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */].MinProgress;
 
-        bmd.circle(radius, radius, radius, '#ffffff');
-        bmd.circle(width - radius, radius, radius, '#ffffff');
+        if (this.frontGraphic.visible) {
+            this.frontGraphic.tint = this._getColor();
 
-        bmd.ctx.fillStyle = '#ffffff'; //bar must have pure white bitmap data in order to be tinted effectively
-        bmd.ctx.beginPath();
-        bmd.ctx.rect(radius, 0, width - radius * 2, height);
-        bmd.ctx.fill();
+            //Create the cropping parameters: set the new, cropped image properties.
+            const newWidth = this._progress * this.width;
+            const x = (this.reversed) ? this.width - newWidth : 0;
+            const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
 
-        return bmd;
+            //perform the crop!
+            this.frontGraphic.crop(cropRect);
+
+            //position the newly cropped object
+            if (this.reversed) {
+                this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset;
+            } else {
+                this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset;
+            }
+        }
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = ProgressBar;
@@ -368,72 +375,42 @@ Original: http://jsfiddle.net/lewster32/0yvemxnw/
 */
 
 
-class PieProgress extends Phaser.Group {
-    constructor(game, x, y, radius, color, angle, text) {
-        super(game, x, y);
+class PieProgress extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */] {
+    constructor(game,
+        radius,
+        texture,
+        innerGraphicOffset,
+        text, frontColor, fontStyle) {
 
-        this._radius = radius;
-        this._progress = 1;
-        this.bmp = this.game.add.bitmapData(radius * 2, radius * 2);
-        this.loadTexture(this.bmp);
+        super(game, radius, radius, texture,
+            innerGraphicOffset,
+            text, frontColor, fontStyle);
 
-        this.anchor.setTo(0.5, 0.5);
-        this.angle = angle || -90;
-        this.color = color || '#fff';
-        this.updateProgress();
-
-        this._text = this.game.add.text(0, 0, text, {
-            font: '26px papercuts',
-            fill: '#ffffff',
-            stroke: '#535353',
-            strokeThickness: 5
-        });
-        this._text.anchor.setTo(0.5, 0.4);
-        this.addChild(this._text);
-        this._text.angle = -this.angle;
+        this.frontGraphic.angle = -90;
     }
 
-    updateProgress() {
-        var progress = this._progress;
-        progress = Phaser.Math.clamp(progress, 0.00001, 0.99999);
+    _applyCrop() {
+        this.frontGraphic.visible = this._progress != __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */].MaxProgress;
+        if (this.frontGraphic.visible) {
 
-        this.bmp.clear();
-        this.bmp.ctx.fillStyle = this.color;
-        this.bmp.ctx.beginPath();
-        this.bmp.ctx.arc(this._radius, this._radius, this._radius, 0, (Math.PI * 2) * progress, true);
-        this.bmp.ctx.lineTo(this._radius, this._radius);
-        this.bmp.ctx.closePath();
-        this.bmp.ctx.fill();
-        this.bmp.dirty = true;
+            let radius = this.frontGraphic.height / 2;
+            let color = this._getColor();
+            //let color = Phaser.Color.valueToColor(this._getColor());
+            //color = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+            let new_angle = (this.reversed) ? (Math.PI * 2) * (1 - this.progress) : (Math.PI * 2) * this.progress;
+
+            this.frontBmd.clear();
+            this.frontBmd.ctx.fillStyle = color;
+            this.frontBmd.ctx.beginPath();
+            this.frontBmd.ctx.arc(radius, radius, radius, 0, new_angle, true);
+            this.frontBmd.ctx.lineTo(radius, radius);
+            this.frontBmd.ctx.closePath();
+            this.frontBmd.ctx.fill();
+
+            this.frontBmd.update();
+        }
     }
 
-    getTextSprite() {
-        return this._text;
-    }
-    setText(val) {
-        this._text.setText(val);
-    }
-
-
-
-    getRadius() {
-        return this._radius;
-    }
-    setRadius(val) {
-        this._radius = (val > 0 ? val : 0);
-        this.bmp.resize(this._radius * 2, this._radius * 2);
-        this.updateProgress();
-    }
-
-
-
-    getProgress() {
-        return this._progress;
-    }
-    setProgress(val) {
-        this._progress = Phaser.Math.clamp(val, 0, 1);
-        this.updateProgress();
-    }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = PieProgress;
 
@@ -565,9 +542,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ToggleSlider", function() { return __WEBPACK_IMPORTED_MODULE_3__Slider_ToggleSlider_js__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__ = __webpack_require__(1);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Toast", function() { return __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__["a"]; });
-
-//export {default as Star}from './particles/Star.js';
-//export {default as Stars} from './particles/Stars.js';
+//bundle all the individual files together for export
 
 
 
