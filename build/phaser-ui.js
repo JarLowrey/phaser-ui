@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,9 +82,54 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 /*
+ * Graphics
+ * Contains some pretty pre-defined graphics objects
+ */
+class Graphics {
+
+    static roundedRectBmd(game, width, height) {
+        const radius = height / 2;
+        var bmd = game.add.bitmapData(width, height);
+
+        bmd.circle(radius, radius, radius, '#ffffff');
+        bmd.circle(width - radius, radius, radius, '#ffffff');
+
+        bmd.ctx.fillStyle = '#ffffff'; //bar must have pure white bitmap data in order to be tinted effectively
+        bmd.ctx.beginPath();
+        bmd.ctx.rect(radius, 0, width - radius * 2, height);
+        bmd.ctx.fill();
+
+        return bmd;
+    }
+
+    static getBitmapData(game, input, width, height) {
+        let bmd = null;
+
+        if (typeof input == 'function') {
+            bmd = input(game, width, height);
+        } else if (input instanceof Phaser.Image) {
+            bmd = game.make.bitmapData(width, height);
+            bmd.copy(input);
+        }
+
+        return bmd;
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Graphics;
+
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Misc_Graphics__ = __webpack_require__(0);
+/*
   Progress
   Parent to UI elements that visualize a range of data, eg a ProgressBar or ProgressPie
 */
+
 
 class Progress extends Phaser.Group {
 
@@ -128,7 +173,7 @@ class Progress extends Phaser.Group {
     constructor(game,
         width, height,
         //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-        //This must be a function with params (width,height) that returns a graphic
+        //This must be a function with params (game,width,height) that returns a graphic
         texture,
         innerGraphicOffset = 0,
         text = '',
@@ -153,11 +198,11 @@ class Progress extends Phaser.Group {
         this.innerGraphicOffset = innerGraphicOffset;
 
         // create the sprites
-        this.bgBmd = this.getBitmapData(texture, width, height);
+        this.bgBmd = __WEBPACK_IMPORTED_MODULE_0__Misc_Graphics__["a" /* default */].getBitmapData(this.game, texture, width, height);
         this.bgGraphic = this.game.add.sprite(0, 0, this.bgBmd);
         this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-        this.frontBmd = this.getBitmapData(texture, width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontBmd = __WEBPACK_IMPORTED_MODULE_0__Misc_Graphics__["a" /* default */].getBitmapData(this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);
         this.frontGraphic = this.game.add.sprite(0, 0, this.frontBmd);
         this.frontGraphic.anchor.setTo(0.5, 0.5);
 
@@ -173,21 +218,6 @@ class Progress extends Phaser.Group {
         this.frontGraphicColor = frontColor;
         this.progress = 1.0;
         this.reversed = false;
-
-        this.text.addColor('#ffff00', 0);
-    }
-
-    getBitmapData(input, width, height) {
-        let bmd = null;
-
-        if (typeof input == 'function') {
-            bmd = input.bind(this)(width, height);
-        } else if (input instanceof Phaser.Image) {
-            bmd = this.game.make.bitmapData(width, height);
-            bmd.copy(input);
-        }
-
-        return bmd;
     }
 
     /*
@@ -227,10 +257,10 @@ class Progress extends Phaser.Group {
             this.text.setStyle(style);
         }
         //ensure text does not fall off of graphic
-        this.text.height = Math.max(this.text.height, this.bgGraphic.height);
-        this.text.width = Math.max(this.text.height, this.bgGraphic.width);
-        //this.text.y = this.bgBmd.y;
-        //this.text.x = this.bgBmd.x;
+        this.text.height = Math.min(this.text.height, this.bgGraphic.height);
+        this.text.scale.x = this.text.scale.y;
+        this.text.width = Math.min(this.text.height, this.bgGraphic.width);
+        this.text.scale.y = this.text.scale.x;
     }
 
     _getColor() {
@@ -257,56 +287,82 @@ class Progress extends Phaser.Group {
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Graphics__ = __webpack_require__(0);
 /*
  * Toast
  */
+
+
 class Toast extends Phaser.Group {
 
-    constructor(game, textStr, btn, fontStyle = game.fonts.smallText, duration = textStr.length * 50, fadeDuration = 200) {
+    constructor(game) {
         super(game);
 
-        this.fadeDuration = fadeDuration;
-        this.margin = this.game.dimen.margin.sideOfScreen / 2;
+        this.margin = 10;
 
-        this.text = this.game.add.text(0, 0, textStr, fontStyle);
-        this.text.anchor.setTo(0.5, 0.5);
-        this.addChild(this.text);
+        this.hideTimer = this.game.time.create(false);
 
-        if (btn) {
-            this.btn = btn;
-            this.btn.height = this.text.height;
-            this.btn.scale.x = this.btn.scale.y;
-            this.btn.anchor.setTo(0.5, 0.5);
-            this.btn.top = this.text.bottom;
-            this.btn.x = this.text.x;
-            this.addChild(this.btn);
-        }
+        this._text = this.game.add.text(0, 0);
+        this._text.anchor.setTo(0.5, 0.5);
+        this.addChild(this._text);
 
-        this.bg = FactoryUi.getBgGraphic(this.game, this.width + this.margin, this.height + this.margin);
-        this.bg.top = this.text.top - this.margin;
-        this.bg.x = this.text.x;
+        this.bg = this.game.add.sprite(0, 0);
+        this.bg.anchor.setTo(0.5, 0.5);
+        this.bg.y = this._text.y;
+        this.bg.x = this._text.x;
         this.addChild(this.bg);
         this.sendToBack(this.bg);
 
-        //size + position overall
-        this.width = Math.min(this.bg.width, this.game.world.width);
-        this.scale.y = this.scale.x;
         this.x = this.game.world.centerX;
-        this.y = this.game.world.centerY;
-
-        this.game.time.events.add(duration, this.startFade, this);
+        this.bottom = this.game.world.height - this.margin;
+        this.alpha = 1;
     }
 
-    startFade() {
+    setBackground(backgroundSrc) {
+        let width = this._text.width + this.margin;
+        let height = this._text.height + this.margin;
+
+        if (backgroundSrc) {
+            backgroundSrc = __WEBPACK_IMPORTED_MODULE_0__Graphics__["a" /* default */].getBitmapData(this.game, backgroundSrc, width, height);
+        } else {
+            backgroundSrc = __WEBPACK_IMPORTED_MODULE_0__Graphics__["a" /* default */].roundedRectBmd(this.game, width, height);
+        }
+
+        this.bg.loadTexture(backgroundSrc);
+    }
+
+    getText() {
+        return this._text.text;
+    }
+
+    show(textStr, fontStyle, bgGraphicSrc, delayShown = textStr.length * 50, fadeDuration = 200) {
+        //change up the displayed info & UI
+        this._text.setText(textStr);
+        if (fontStyle) {
+            this._text.setStyle(fontStyle);
+        }
+        this.setBackground(bgGraphicSrc);
+        this.alpha = 1;
+        this.visible = true;
+
+        //if already running a previous timer, kill it and hide the previous Toast quickly
+        this.hideTimer.stop();
+
+        //set the Toast to be hidden after a delay
+        this.hideTimer.add(delayShown, this._fade, this, fadeDuration);
+        this.hideTimer.start();
+    }
+
+    _fade(fadeDuration) {
         if (!this.exists) return;
 
         this.game.add.tween(this).to({
             alpha: 0
-        }, this.fadeDuration, Phaser.Easing.Linear.None, true);
+        }, fadeDuration, Phaser.Easing.Linear.None, true);
     }
 
 }
@@ -315,19 +371,17 @@ class Toast extends Phaser.Group {
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(1);
 
 
 class ProgressBar extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */] {
 
     constructor(game,
         width, height,
-        //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-        //This must be a function with params (width,height) that returns a graphic
         texture,
         innerGraphicOffset,
         frontColor,
@@ -365,11 +419,11 @@ class ProgressBar extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(1);
 /*
 Original: http://jsfiddle.net/lewster32/0yvemxnw/
 */
@@ -417,7 +471,7 @@ class PieProgress extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -426,7 +480,7 @@ class PieProgress extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default
  *
  * Provides a pretty slider for displaying settings options
  */
- 
+
 class ToggleSlider extends Phaser.Group {
 
     constructor(game, onClickCallback = function() {}, isOn = false,
@@ -527,22 +581,25 @@ class ToggleSlider extends Phaser.Group {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress_Progress_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress_Progress_js__ = __webpack_require__(1);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Progress", function() { return __WEBPACK_IMPORTED_MODULE_0__Progress_Progress_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Progress_ProgressPie_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Progress_ProgressPie_js__ = __webpack_require__(4);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressPie", function() { return __WEBPACK_IMPORTED_MODULE_1__Progress_ProgressPie_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Progress_ProgressBar_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Progress_ProgressBar_js__ = __webpack_require__(3);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressBar", function() { return __WEBPACK_IMPORTED_MODULE_2__Progress_ProgressBar_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Slider_ToggleSlider_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Slider_ToggleSlider_js__ = __webpack_require__(5);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ToggleSlider", function() { return __WEBPACK_IMPORTED_MODULE_3__Slider_ToggleSlider_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__ = __webpack_require__(2);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Toast", function() { return __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Misc_Graphics_js__ = __webpack_require__(0);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Graphics", function() { return __WEBPACK_IMPORTED_MODULE_5__Misc_Graphics_js__["a"]; });
 //bundle all the individual files together for export
+
 
 
 

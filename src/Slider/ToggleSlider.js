@@ -3,7 +3,7 @@
  *
  * Provides a pretty slider for displaying settings options
  */
- 
+
 export default class ToggleSlider extends Phaser.Group {
 
     constructor(game, onClickCallback = function() {}, isOn = false,

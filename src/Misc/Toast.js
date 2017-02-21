@@ -1,49 +1,74 @@
 /*
  * Toast
  */
+import Graphics from './Graphics';
+
 export default class Toast extends Phaser.Group {
 
-    constructor(game, textStr, btn, fontStyle = game.fonts.smallText, duration = textStr.length * 50, fadeDuration = 200) {
+    constructor(game) {
         super(game);
 
-        this.fadeDuration = fadeDuration;
-        this.margin = this.game.dimen.margin.sideOfScreen / 2;
+        this.margin = 10;
 
-        this.text = this.game.add.text(0, 0, textStr, fontStyle);
-        this.text.anchor.setTo(0.5, 0.5);
-        this.addChild(this.text);
+        this.hideTimer = this.game.time.create(false);
 
-        if (btn) {
-            this.btn = btn;
-            this.btn.height = this.text.height;
-            this.btn.scale.x = this.btn.scale.y;
-            this.btn.anchor.setTo(0.5, 0.5);
-            this.btn.top = this.text.bottom;
-            this.btn.x = this.text.x;
-            this.addChild(this.btn);
-        }
+        this._text = this.game.add.text(0, 0);
+        this._text.anchor.setTo(0.5, 0.5);
+        this.addChild(this._text);
 
-        this.bg = FactoryUi.getBgGraphic(this.game, this.width + this.margin, this.height + this.margin);
-        this.bg.top = this.text.top - this.margin;
-        this.bg.x = this.text.x;
+        this.bg = this.game.add.sprite(0, 0);
+        this.bg.anchor.setTo(0.5, 0.5);
+        this.bg.y = this._text.y;
+        this.bg.x = this._text.x;
         this.addChild(this.bg);
         this.sendToBack(this.bg);
 
-        //size + position overall
-        this.width = Math.min(this.bg.width, this.game.world.width);
-        this.scale.y = this.scale.x;
         this.x = this.game.world.centerX;
-        this.y = this.game.world.centerY;
-
-        this.game.time.events.add(duration, this.startFade, this);
+        this.bottom = this.game.world.height - this.margin;
+        this.alpha = 1;
     }
 
-    startFade() {
+    setBackground(backgroundSrc) {
+        let width = this._text.width + this.margin;
+        let height = this._text.height + this.margin;
+
+        if (backgroundSrc) {
+            backgroundSrc = Graphics.getBitmapData(this.game, backgroundSrc, width, height);
+        } else {
+            backgroundSrc = Graphics.roundedRectBmd(this.game, width, height);
+        }
+
+        this.bg.loadTexture(backgroundSrc);
+    }
+
+    getText() {
+        return this._text.text;
+    }
+
+    show(textStr, fontStyle, bgGraphicSrc, delayShown = textStr.length * 50, fadeDuration = 200) {
+        //change up the displayed info & UI
+        this._text.setText(textStr);
+        if (fontStyle) {
+            this._text.setStyle(fontStyle);
+        }
+        this.setBackground(bgGraphicSrc);
+        this.alpha = 1;
+        this.visible = true;
+
+        //if already running a previous timer, kill it and hide the previous Toast quickly
+        this.hideTimer.stop();
+
+        //set the Toast to be hidden after a delay
+        this.hideTimer.add(delayShown, this._fade, this, fadeDuration);
+        this.hideTimer.start();
+    }
+
+    _fade(fadeDuration) {
         if (!this.exists) return;
 
         this.game.add.tween(this).to({
             alpha: 0
-        }, this.fadeDuration, Phaser.Easing.Linear.None, true);
+        }, fadeDuration, Phaser.Easing.Linear.None, true);
     }
 
 }

@@ -7,3 +7,4 @@ export {default as ProgressBar} from './Progress/ProgressBar.js';
 export {default as ToggleSlider} from './Slider/ToggleSlider.js';
 
 export {default as Toast} from './Misc/Toast.js';
+export {default as Graphics} from './Misc/Graphics.js';

@@ -4,8 +4,6 @@ export default class ProgressBar extends Progress {
 
     constructor(game,
         width, height,
-        //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-        //This must be a function with params (width,height) that returns a graphic
         texture,
         innerGraphicOffset,
         frontColor,

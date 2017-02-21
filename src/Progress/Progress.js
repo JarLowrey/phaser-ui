@@ -2,6 +2,7 @@
   Progress
   Parent to UI elements that visualize a range of data, eg a ProgressBar or ProgressPie
 */
+import Graphics from '../Misc/Graphics';
 
 export default class Progress extends Phaser.Group {
 
@@ -45,7 +46,7 @@ export default class Progress extends Phaser.Group {
     constructor(game,
         width, height,
         //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-        //This must be a function with params (width,height) that returns a graphic
+        //This must be a function with params (game,width,height) that returns a graphic
         texture,
         innerGraphicOffset = 0,
         text = '',
@@ -70,11 +71,11 @@ export default class Progress extends Phaser.Group {
         this.innerGraphicOffset = innerGraphicOffset;
 
         // create the sprites
-        this.bgBmd = this.getBitmapData(texture, width, height);
+        this.bgBmd = Graphics.getBitmapData(this.game, texture, width, height);
         this.bgGraphic = this.game.add.sprite(0, 0, this.bgBmd);
         this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-        this.frontBmd = this.getBitmapData(texture, width - innerGraphicOffset, height - innerGraphicOffset);
+        this.frontBmd = Graphics.getBitmapData(this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);
         this.frontGraphic = this.game.add.sprite(0, 0, this.frontBmd);
         this.frontGraphic.anchor.setTo(0.5, 0.5);
 
@@ -90,21 +91,6 @@ export default class Progress extends Phaser.Group {
         this.frontGraphicColor = frontColor;
         this.progress = 1.0;
         this.reversed = false;
-
-        this.text.addColor('#ffff00', 0);
-    }
-
-    getBitmapData(input, width, height) {
-        let bmd = null;
-
-        if (typeof input == 'function') {
-            bmd = input.bind(this)(width, height);
-        } else if (input instanceof Phaser.Image) {
-            bmd = this.game.make.bitmapData(width, height);
-            bmd.copy(input);
-        }
-
-        return bmd;
     }
 
     /*
@@ -144,10 +130,10 @@ export default class Progress extends Phaser.Group {
             this.text.setStyle(style);
         }
         //ensure text does not fall off of graphic
-        this.text.height = Math.max(this.text.height, this.bgGraphic.height);
-        this.text.width = Math.max(this.text.height, this.bgGraphic.width);
-        //this.text.y = this.bgBmd.y;
-        //this.text.x = this.bgBmd.x;
+        this.text.height = Math.min(this.text.height, this.bgGraphic.height);
+        this.text.scale.x = this.text.scale.y;
+        this.text.width = Math.min(this.text.height, this.bgGraphic.width);
+        this.text.scale.y = this.text.scale.x;
     }
 
     _getColor() {
