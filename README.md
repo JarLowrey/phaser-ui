@@ -16,7 +16,7 @@ to use run the following in your game's `package.json` directory:
 In files where you want to use these, import them at the top. ProgressBar for example:
 
 ```
-import * as PhaserUi from 'phaser-ui'
+import * as PhaserUi from 'phaser-ui';
 var bar = new PhaserUi.ProgressBar(game,...);
 ```
 
