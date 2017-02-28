@@ -268,15 +268,14 @@ var Progress = function (_Phaser$Group) {
     key: 'makePressable',
     value: function makePressable() {
       var onPressedFunction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {
-        console.log('Progress UI Entity Pressed');
+        console.log('Progress UI Entity Pressed. Overwrite this function by providing param one when calling `makePressable`');
       };
-      var bgPressedColor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000';
-      var frontPressedColor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '#000';
+      var bgPressedColor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0x000000;
+      var frontPressedColor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0x000000;
 
       this.bgPressedColor = bgPressedColor;
       this.frontPressedColor = frontPressedColor;
       this.notPressedBgTint = this.bgGraphic.tint;
-      console.log(this.notPressedBgTint);
 
       //register click listeners
       this.setAll('inputEnabled', true);
@@ -308,11 +307,10 @@ var Progress = function (_Phaser$Group) {
       if (style) {
         this.text.setStyle(style);
       }
-      //ensure text does not fall off of graphic
-      this.text.height = Math.min(this.text.height, this.bgGraphic.height);
-      this.text.scale.x = this.text.scale.y;
-      this.text.width = Math.min(this.text.height, this.bgGraphic.width);
-      this.text.scale.y = this.text.scale.x;
+
+      //ensure text does not fall off of graphic - this distorts text so just leave caller to handle it by setting font style
+      //this.text.height = Math.min(this.text.height, this.bgGraphic.height);
+      //this.text.width = Math.min(this.text.height, this.bgGraphic.width);
     }
   }, {
     key: '_getColor',
@@ -505,8 +503,9 @@ var ProgressBar = function (_Progress) {
         this.frontGraphic.tint = this._getColor();
 
         //Create the cropping parameters: set the new, cropped image properties.
-        var newWidth = this._progress * this.width;
-        var x = this.reversed ? this.width - newWidth : 0;
+        var originalFrontGraphicWidth = this.bgGraphic.width - this.innerGraphicOffset;
+        var newWidth = this._progress * originalFrontGraphicWidth;
+        var x = this.reversed ? originalFrontGraphicWidth - newWidth : 0;
         var cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
 
         //perform the crop!
@@ -514,9 +513,9 @@ var ProgressBar = function (_Progress) {
 
         //position the newly cropped object
         if (this.reversed) {
-          this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset;
+          this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset / 2;
         } else {
-          this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset;
+          this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset / 2;
         }
       }
     }
@@ -574,10 +573,10 @@ var PieProgress = function (_Progress) {
       if (this.frontGraphic.visible) {
 
         var radius = this.frontGraphic.height / 2;
-        var color = this._getColor();
+        var color = '#fff';
         //let color = Phaser.Color.valueToColor(this._getColor());
         //color = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-        var new_angle = this.reversed ? Math.PI * 2 * (1 - this.progress) : Math.PI * 2 * this.progress;
+        var new_angle = this.reversed ? Math.PI * 2 * this.progress : Math.PI * 2 * (1 - this.progress);
 
         this.frontBmd.clear();
         this.frontBmd.ctx.fillStyle = color;
@@ -588,6 +587,7 @@ var PieProgress = function (_Progress) {
         this.frontBmd.ctx.fill();
 
         this.frontBmd.update();
+        this.frontGraphic.tint = this._getColor();
       }
     }
   }]);

@@ -22,10 +22,10 @@ export default class PieProgress extends Progress {
     if (this.frontGraphic.visible) {
 
       let radius = this.frontGraphic.height / 2;
-      let color = this._getColor();
+      let color = '#fff';
       //let color = Phaser.Color.valueToColor(this._getColor());
       //color = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-      let new_angle = (this.reversed) ? (Math.PI * 2) * (1 - this.progress) : (Math.PI * 2) * this.progress;
+      let new_angle = (this.reversed) ? (Math.PI * 2) * this.progress : (Math.PI * 2) * (1 - this.progress);
 
       this.frontBmd.clear();
       this.frontBmd.ctx.fillStyle = color;
@@ -36,6 +36,7 @@ export default class PieProgress extends Progress {
       this.frontBmd.ctx.fill();
 
       this.frontBmd.update();
+      this.frontGraphic.tint = this._getColor();
     }
   }
 

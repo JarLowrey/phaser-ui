@@ -98,13 +98,12 @@ export default class Progress extends Phaser.Group {
     onPressedFunction = function() {
       console.log('Progress UI Entity Pressed. Overwrite this function by providing param one when calling `makePressable`');
     },
-    bgPressedColor = '#000',
-    frontPressedColor = '#000'
+    bgPressedColor = 0x000000,
+    frontPressedColor = 0x000000
   ) {
     this.bgPressedColor = bgPressedColor;
     this.frontPressedColor = frontPressedColor;
     this.notPressedBgTint = this.bgGraphic.tint;
-    console.log(this.notPressedBgTint)
 
     //register click listeners
     this.setAll('inputEnabled', true);
@@ -128,11 +127,10 @@ export default class Progress extends Phaser.Group {
     if (style) {
       this.text.setStyle(style);
     }
-    //ensure text does not fall off of graphic
-    this.text.height = Math.min(this.text.height, this.bgGraphic.height);
-    this.text.scale.x = this.text.scale.y;
-    this.text.width = Math.min(this.text.height, this.bgGraphic.width);
-    this.text.scale.y = this.text.scale.x;
+
+    //ensure text does not fall off of graphic - this distorts text so just leave caller to handle it by setting font style
+    //this.text.height = Math.min(this.text.height, this.bgGraphic.height);
+    //this.text.width = Math.min(this.text.height, this.bgGraphic.width);
   }
 
   _getColor() {

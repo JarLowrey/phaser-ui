@@ -24,8 +24,9 @@ export default class ProgressBar extends Progress {
       this.frontGraphic.tint = this._getColor();
 
       //Create the cropping parameters: set the new, cropped image properties.
-      const newWidth = this._progress * this.width;
-      const x = (this.reversed) ? this.width - newWidth : 0;
+      const originalFrontGraphicWidth = this.bgGraphic.width - this.innerGraphicOffset;
+      const newWidth = this._progress * originalFrontGraphicWidth;
+      const x = (this.reversed) ? originalFrontGraphicWidth - newWidth : 0;
       const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
 
       //perform the crop!
@@ -33,9 +34,9 @@ export default class ProgressBar extends Progress {
 
       //position the newly cropped object
       if (this.reversed) {
-        this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset;
+        this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset / 2;
       } else {
-        this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset;
+        this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset / 2;
       }
     }
   }
