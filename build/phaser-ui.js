@@ -483,8 +483,9 @@ var ProgressBar = function (_Progress) {
   function ProgressBar(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text) {
     _classCallCheck(this, ProgressBar);
 
+    console.log(texture);
     if (!texture) {
-      texture = _Graphics2.default.roundedRectBmd(game, width, height);
+      texture = _Graphics2.default.roundedRectBmd;
     }
     return _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text));
   }
