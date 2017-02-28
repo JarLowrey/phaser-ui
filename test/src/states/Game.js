@@ -46,11 +46,11 @@ export default class Game extends Phaser.State {
 
     //tween pie data
     this.game.add.tween(pie).to({
-      progress: 0
+      progress: 1
     }, 2000, 'Linear', true, 0, -1, true);
 
     this.game.add.tween(pie2).to({
-      progress: 0
+      progress: 1
     }, 2000, 'Linear', true, 0, -1, true);
 
   }
@@ -68,11 +68,11 @@ export default class Game extends Phaser.State {
 
     //tween bar data
     this.game.add.tween(bar).to({
-      progress: 0
+      progress: 1
     }, 2000, 'Linear', true, 0, -1, true);
 
     this.game.add.tween(bar2).to({
-      progress: 0
+      progress: 1
     }, 2000, 'Linear', true, 0, -1, true);
   }
 

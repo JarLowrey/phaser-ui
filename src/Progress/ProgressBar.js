@@ -1,4 +1,5 @@
 import Progress from './Progress';
+import Graphics from '../Misc/Graphics';
 
 export default class ProgressBar extends Progress {
 
@@ -9,6 +10,9 @@ export default class ProgressBar extends Progress {
         frontColor,
         fontStyle, text
     ) {
+        if (!texture) {
+            texture = Graphics.roundedRectBmd(game, width, height);
+        }
         super(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text);
     }
 

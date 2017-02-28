@@ -78,537 +78,106 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/*
- * Graphics
- * Contains some pretty pre-defined graphics objects
- */
-class Graphics {
-
-    static roundedRectBmd(game, width, height) {
-        const radius = height / 2;
-        var bmd = game.add.bitmapData(width, height);
-
-        bmd.circle(radius, radius, radius, '#ffffff');
-        bmd.circle(width - radius, radius, radius, '#ffffff');
-
-        bmd.ctx.fillStyle = '#ffffff'; //bar must have pure white bitmap data in order to be tinted effectively
-        bmd.ctx.beginPath();
-        bmd.ctx.rect(radius, 0, width - radius * 2, height);
-        bmd.ctx.fill();
-
-        return bmd;
-    }
-
-    static getBitmapData(game, input, width, height) {
-        let bmd = null;
-
-        if (typeof input == 'function') {
-            bmd = input(game, width, height);
-        } else if (input instanceof Phaser.Image) {
-            bmd = game.make.bitmapData(width, height);
-            bmd.copy(input);
-        }
-
-        return bmd;
-    }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Graphics;
-
-
+throw new Error("Module build failed: Error: Module failed because of a eslint error.\n\n\u001b[4m/home/james/Documents/phaser-ui/src/Misc/Graphics.js\u001b[24m\n   \u001b[2m7:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m8:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m9:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m11:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m12:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m14:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m15:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m16:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m17:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m19:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m22:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m23:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m25:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m26:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m28:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m29:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m32:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n\n\u001b[31m\u001b[1m✖ 17 problems (17 errors, 0 warnings)\n\u001b[22m\u001b[39m\n    at lint (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:131:17)\n    at Object.module.exports (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:197:3)");
 
 /***/ }),
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Misc_Graphics__ = __webpack_require__(0);
-/*
-  Progress
-  Parent to UI elements that visualize a range of data, eg a ProgressBar or ProgressPie
-*/
-
-
-class Progress extends Phaser.Group {
-
-    get progress() {
-        return this._progress;
-    }
-    set progress(val) {
-        if (val > Progress.MaxProgress) {
-            val = Progress.MaxProgress;
-        } else if (val < Progress.MinProgress) {
-            val = Progress.MinProgress;
-        }
-        this._progress = val;
-
-        this._applyCrop();
-    }
-
-    set reversed(val) {
-        this._reversed = val;
-        this._applyCrop();
-    }
-    get reversed() {
-        return this._reversed;
-    }
-
-    get frontGraphicColor() {
-        return this._frontGraphicColor;
-    }
-    //either a hex value string, or a list of objects where each object has a (percentage) 'threshold' and a 'color'
-    set frontGraphicColor(val) {
-        if (Array.isArray(val)) {
-            val.sort(function(a, b) {
-                return a.threshold - b.threshold;
-            });
-        }
-        this._frontGraphicColor = val;
-
-        this.frontGraphic.tint = this._getColor();
-    }
-
-    constructor(game,
-        width, height,
-        //The background and foreground graphics must have diff sources as cropping the front modifies the underlying texture
-        //This must be a function with params (game,width,height) that returns a graphic
-        texture,
-        innerGraphicOffset = 0,
-        text = '',
-        frontColor = [{
-            'threshold': .25,
-            'color': '0xff0000'
-        }, {
-            'threshold': .5,
-            'color': '0xffff00'
-        }, {
-            'threshold': 1,
-            'color': '0x00ff00'
-        }],
-        fontStyle = ''
-    ) {
-        super(game);
-
-        Progress.MaxProgress = 0.999999;
-        Progress.MinProgress = 0.000001;
-
-        //save useful vars
-        this.innerGraphicOffset = innerGraphicOffset;
-
-        // create the sprites
-        this.bgBmd = __WEBPACK_IMPORTED_MODULE_0__Misc_Graphics__["a" /* default */].getBitmapData(this.game, texture, width, height);
-        this.bgGraphic = this.game.add.sprite(0, 0, this.bgBmd);
-        this.bgGraphic.anchor.setTo(0.5, 0.5);
-
-        this.frontBmd = __WEBPACK_IMPORTED_MODULE_0__Misc_Graphics__["a" /* default */].getBitmapData(this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);
-        this.frontGraphic = this.game.add.sprite(0, 0, this.frontBmd);
-        this.frontGraphic.anchor.setTo(0.5, 0.5);
-
-        this.text = this.game.add.text(0, 0);
-        this.text.anchor.setTo(0.5, 0.5);
-        this.setText(text, fontStyle);
-
-        this.addChild(this.bgGraphic);
-        this.addChild(this.frontGraphic);
-        this.addChild(this.text);
-
-        //set sprite properties
-        this.frontGraphicColor = frontColor;
-        this.progress = 1.0;
-        this.reversed = false;
-    }
-
-    /*
-    makePressable(onPressedFunction, bgPressedColor, outlinePressedColor) {
-        this.bgPressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width - this.strokeLength, this.height - this.strokeLength));
-        this.bgPressed.anchor.setTo(0.5, 0.5);
-        this.addChildAt(this.bgPressed, 0);
-        this.bgPressed.tint = bgPressedColor;
-
-        this.outlinePressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width, this.height));
-        this.outlinePressed.anchor.setTo(0.5, 0.5);
-        this.addChildAt(this.outlinePressed, 0);
-        this.outlinePressed.tint = outlinePressedColor;
-
-        //register click listeners
-        this.setAll('inputEnabled', true);
-        this.callAll('events.onInputDown.add', 'events.onInputDown', this.onDown, this);
-        this.callAll('events.onInputUp.add', 'events.onInputUp', this.onUp, this);
-        this.pressFunction = onPressedFunction;
-    }
-    onUp() {
-        this.swapChildren(this.bgPressed, this.bgSprite);
-        this.swapChildren(this.outlinePressed, this.outlineSprite);
-
-        this.pressFunction();
-    }
-    onDown() {
-        this.swapChildren(this.bgPressed, this.bgSprite);
-        this.swapChildren(this.outlinePressed, this.outlineSprite);
-    }
-    */
-
-    setText(text = '', style = null) {
-        this.text.setText(text);
-
-        if (style) {
-            this.text.setStyle(style);
-        }
-        //ensure text does not fall off of graphic
-        this.text.height = Math.min(this.text.height, this.bgGraphic.height);
-        this.text.scale.x = this.text.scale.y;
-        this.text.width = Math.min(this.text.height, this.bgGraphic.width);
-        this.text.scale.y = this.text.scale.x;
-    }
-
-    _getColor() {
-        let color = null;
-        //allow Bar's color to change at different progressPercentageRemaining values
-        if (Array.isArray(this._frontGraphicColor)) {
-            //loop thru all the elements in the barColor array, starting at the smallest theshold. If _progress is under a threshold, set the color and exit the loop.
-            for (var i = 0; i < this._frontGraphicColor.length; i++) {
-                const barColorInstance = this._frontGraphicColor[i];
-                if (this._progress <= barColorInstance.threshold) {
-                    color = barColorInstance.color;
-                    break;
-                }
-            }
-        } else {
-            color = this._frontGraphicColor;
-        }
-        return color;
-    }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Progress;
-
-
+throw new Error("Module build failed: Error: Module failed because of a eslint error.\n\n\u001b[4m/home/james/Documents/phaser-ui/src/Misc/Toast.js\u001b[24m\n   \u001b[2m8:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m9:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m11:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m13:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m15:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m16:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m17:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m19:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m20:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m21:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m22:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m23:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m24:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m26:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m27:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m28:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m31:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m32:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m33:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m35:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m36:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m38:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m41:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m44:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m45:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m48:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m50:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m51:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m52:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m54:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m55:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m56:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m59:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m62:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m63:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m66:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m67:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m69:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m70:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n\n\u001b[31m\u001b[1m✖ 39 problems (39 errors, 0 warnings)\n\u001b[22m\u001b[39m\n    at lint (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:131:17)\n    at Object.module.exports (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:197:3)");
 
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Graphics__ = __webpack_require__(0);
-/*
- * Toast
- */
-
-
-class Toast extends Phaser.Group {
-
-    constructor(game) {
-        super(game);
-
-        this.margin = 10;
-
-        this.hideTimer = this.game.time.create(false);
-
-        this._text = this.game.add.text(0, 0);
-        this._text.anchor.setTo(0.5, 0.5);
-        this.addChild(this._text);
-
-        this.bg = this.game.add.sprite(0, 0);
-        this.bg.anchor.setTo(0.5, 0.5);
-        this.bg.y = this._text.y;
-        this.bg.x = this._text.x;
-        this.addChild(this.bg);
-        this.sendToBack(this.bg);
-
-        this.x = this.game.world.centerX;
-        this.bottom = this.game.world.height - this.margin;
-        this.alpha = 1;
-    }
-
-    setBackground(backgroundSrc) {
-        let width = this._text.width + this.margin;
-        let height = this._text.height + this.margin;
-
-        if (backgroundSrc) {
-            backgroundSrc = __WEBPACK_IMPORTED_MODULE_0__Graphics__["a" /* default */].getBitmapData(this.game, backgroundSrc, width, height);
-        } else {
-            backgroundSrc = __WEBPACK_IMPORTED_MODULE_0__Graphics__["a" /* default */].roundedRectBmd(this.game, width, height);
-        }
-
-        this.bg.loadTexture(backgroundSrc);
-    }
-
-    getText() {
-        return this._text.text;
-    }
-
-    show(textStr, fontStyle, bgGraphicSrc, delayShown = textStr.length * 50, fadeDuration = 200) {
-        //change up the displayed info & UI
-        this._text.setText(textStr);
-        if (fontStyle) {
-            this._text.setStyle(fontStyle);
-        }
-        this.setBackground(bgGraphicSrc);
-        this.alpha = 1;
-        this.visible = true;
-
-        //if already running a previous timer, kill it and hide the previous Toast quickly
-        this.hideTimer.stop();
-
-        //set the Toast to be hidden after a delay
-        this.hideTimer.add(delayShown, this._fade, this, fadeDuration);
-        this.hideTimer.start();
-    }
-
-    _fade(fadeDuration) {
-        if (!this.exists) return;
-
-        this.game.add.tween(this).to({
-            alpha: 0
-        }, fadeDuration, Phaser.Easing.Linear.None, true);
-    }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Toast;
-
-
+throw new Error("Module build failed: Error: Module failed because of a eslint error.\n\n\u001b[4m/home/james/Documents/phaser-ui/src/Progress/Progress.js\u001b[24m\n    \u001b[2m9:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m10:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m12:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m13:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m14:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m16:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m18:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m20:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m23:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m24:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m25:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m27:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m28:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m31:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m32:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m35:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m36:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m37:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m38:17\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 14 spaces but found 16  \u001b[2mindent\u001b[22m\n   \u001b[2m41:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m43:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m46:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n   \u001b[2m54:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m55:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m57:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m58:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m60:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m61:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n   \u001b[2m65:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m67:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m68:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m71:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m74:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m75:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m76:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m78:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m79:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m80:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m82:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m83:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m84:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m86:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m87:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m88:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m91:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m92:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n   \u001b[2m93:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m126:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m127:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m129:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m130:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m133:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m134:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m135:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m136:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m139:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m140:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m142:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m144:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m145:17\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 14 spaces but found 16  \u001b[2mindent\u001b[22m\n  \u001b[2m146:17\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 14 spaces but found 16  \u001b[2mindent\u001b[22m\n  \u001b[2m147:21\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 18 spaces but found 20  \u001b[2mindent\u001b[22m\n  \u001b[2m148:21\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 18 spaces but found 20  \u001b[2mindent\u001b[22m\n  \u001b[2m152:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m154:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n\n\u001b[31m\u001b[1m✖ 65 problems (65 errors, 0 warnings)\n\u001b[22m\u001b[39m\n    at lint (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:131:17)\n    at Object.module.exports (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:197:3)");
 
 /***/ }),
 /* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(1);
-
-
-class ProgressBar extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */] {
-
-    constructor(game,
-        width, height,
-        texture,
-        innerGraphicOffset,
-        frontColor,
-        fontStyle, text
-    ) {
-        super(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text);
-    }
-
-    _applyCrop() {
-        //artifacts show up if you crop <=0. Thus hide it instead
-        this.frontGraphic.visible = this._progress != __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */].MinProgress;
-
-        if (this.frontGraphic.visible) {
-            this.frontGraphic.tint = this._getColor();
-
-            //Create the cropping parameters: set the new, cropped image properties.
-            const newWidth = this._progress * this.width;
-            const x = (this.reversed) ? this.width - newWidth : 0;
-            const cropRect = new Phaser.Rectangle(x, 0, newWidth, this.height);
-
-            //perform the crop!
-            this.frontGraphic.crop(cropRect);
-
-            //position the newly cropped object
-            if (this.reversed) {
-                this.frontGraphic.right = this.bgGraphic.right - this.innerGraphicOffset;
-            } else {
-                this.frontGraphic.left = this.bgGraphic.left + this.innerGraphicOffset;
-            }
-        }
-    }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = ProgressBar;
-
-
+throw new Error("Module build failed: Error: Module failed because of a eslint error.\n\n\u001b[4m/home/james/Documents/phaser-ui/src/Progress/ProgressBar.js\u001b[24m\n   \u001b[2m5:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m12:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m13:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m13:23\u001b[22m  \u001b[31merror\u001b[39m  'Graphics' is not defined                       \u001b[2mno-undef\u001b[22m\n  \u001b[2m15:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m18:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m20:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m22:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m23:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m26:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m27:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m28:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m31:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m34:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m35:17\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 14 spaces but found 16  \u001b[2mindent\u001b[22m\n  \u001b[2m37:17\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 14 spaces but found 16  \u001b[2mindent\u001b[22m\n\n\u001b[31m\u001b[1m✖ 16 problems (16 errors, 0 warnings)\n\u001b[22m\u001b[39m\n    at lint (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:131:17)\n    at Object.module.exports (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:197:3)");
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress__ = __webpack_require__(1);
-/*
-Original: http://jsfiddle.net/lewster32/0yvemxnw/
-*/
-
-
-class PieProgress extends __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */] {
-    constructor(game,
-        radius,
-        texture,
-        innerGraphicOffset,
-        text, frontColor, fontStyle) {
-
-        super(game, radius, radius, texture,
-            innerGraphicOffset,
-            text, frontColor, fontStyle);
-
-        this.frontGraphic.angle = -90;
-    }
-
-    _applyCrop() {
-        this.frontGraphic.visible = this._progress != __WEBPACK_IMPORTED_MODULE_0__Progress__["a" /* default */].MaxProgress;
-        if (this.frontGraphic.visible) {
-
-            let radius = this.frontGraphic.height / 2;
-            let color = this._getColor();
-            //let color = Phaser.Color.valueToColor(this._getColor());
-            //color = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
-            let new_angle = (this.reversed) ? (Math.PI * 2) * (1 - this.progress) : (Math.PI * 2) * this.progress;
-
-            this.frontBmd.clear();
-            this.frontBmd.ctx.fillStyle = color;
-            this.frontBmd.ctx.beginPath();
-            this.frontBmd.ctx.arc(radius, radius, radius, 0, new_angle, true);
-            this.frontBmd.ctx.lineTo(radius, radius);
-            this.frontBmd.ctx.closePath();
-            this.frontBmd.ctx.fill();
-
-            this.frontBmd.update();
-        }
-    }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = PieProgress;
-
-
+throw new Error("Module build failed: Error: Module failed because of a eslint error.\n\n\u001b[4m/home/james/Documents/phaser-ui/src/Progress/ProgressPie.js\u001b[24m\n   \u001b[2m7:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m13:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m17:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m20:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m21:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m22:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m24:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m25:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m28:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m30:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m31:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m32:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m33:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m34:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m35:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m36:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m38:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n\n\u001b[31m\u001b[1m✖ 17 problems (17 errors, 0 warnings)\n\u001b[22m\u001b[39m\n    at lint (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:131:17)\n    at Object.module.exports (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:197:3)");
 
 /***/ }),
 /* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/*
- * ToggleSlider
- *
- * Provides a pretty slider for displaying settings options
- */
-
-class ToggleSlider extends Phaser.Group {
-
-    constructor(game, onClickCallback = function() {}, isOn = false,
-        onColor = 0x42f462, offColor = 0xffffff, tweenDuration = 400, easing = Phaser.Easing.Exponential.In) {
-        super(game);
-
-        //setup variables
-        this.onColor = onColor;
-        this.offColor = offColor;
-        this.disabledColor = 0xcccccc;
-
-        this.onClickCallback = onClickCallback;
-        this.isOn = isOn;
-        this.tweenDuration = tweenDuration;
-        this.tweenEasing = easing;
-        const width = 50;
-        const radius = 25;
-        const bgHeight = radius / 2;
-
-        //setup children
-        this._bg = this.game.add.graphics();
-        this._bg.beginFill(0xffffff);
-        this._bg.drawRoundedRect(-width / 4, 0, width, bgHeight, bgHeight / 2);
-        this._bg.endFill();
-        this._bg.x = -this._bg.width / 4;
-        this._bg.inputEnabled = true;
-        this._bg.alpha = 0.5;
-
-        this._slidingCircle = this.game.add.graphics();
-        this._slidingCircle.beginFill(0xffffff);
-        this._slidingCircle.drawCircle(0, 0, radius);
-        this._slidingCircle.endFill();
-        this._slidingCircle.y = bgHeight / 2;
-        this._slidingCircle.inputEnabled = true;
-
-        //setup starting state
-        this.setColor();
-        if (this.isOn) {
-            this._slidingCircle.right = this._bg.right;
-        } else {
-            this._slidingCircle.left = this._bg.left;
-        }
-
-        //setup tweens
-        this._slideRight = this.game.add.tween(this._slidingCircle).to({
-            right: this._bg.x + this._bg.width
-        }, this.tweenDuration, this.tweenEasing);
-        this._slideLeft = this.game.add.tween(this._slidingCircle).to({
-            left: this._bg.x
-        }, this.tweenDuration, this.tweenEasing);
-        const reEnableInput = function() {
-            this.inputEnableChildren = true;
-            this._slidingCircle.inputEnabled = true;
-            this._bg.inputEnabled = true;
-
-            this.setColor();
-        };
-        this._slideRight.onComplete.add(reEnableInput, this);
-        this._slideLeft.onComplete.add(reEnableInput, this);
-
-        //add children
-        this.addChild(this._bg);
-        this.addChild(this._slidingCircle);
-
-        //enable input actions
-        this.inputEnableChildren = true;
-        this.onChildInputDown.add(this.toggled, this);
-    }
-
-    setColor() {
-        const color = (this.isOn) ? this.onColor : this.offColor;
-        this._bg.tint = color;
-        this._slidingCircle.tint = color;
-    }
-
-    toggled() {
-        this.isOn = !this.isOn;
-        this.onClickCallback(this.isOn);
-
-        //disable toggle while slidding
-        this.inputEnableChildren = false;
-        this._slidingCircle.inputEnabled = false;
-        this._bg.inputEnabled = false;
-
-        this._bg.tint = this.disabledColor;
-        this._slidingCircle.tint = this.disabledColor;
-
-        if (!this.isOn) {
-            this._slideLeft.start();
-        } else {
-            this._slideRight.start();
-        }
-    }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = ToggleSlider;
-
-
+throw new Error("Module build failed: Error: Module failed because of a eslint error.\n\n\u001b[4m/home/james/Documents/phaser-ui/src/Slider/ToggleSlider.js\u001b[24m\n   \u001b[2m9:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m11:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m14:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m15:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m16:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m18:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m19:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m20:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m21:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m22:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m23:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m24:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m27:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m28:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m29:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m30:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m31:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m32:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m33:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m35:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m36:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m37:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m38:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m39:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m40:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m43:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m44:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m45:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m47:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m51:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m52:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m54:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m55:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m57:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m58:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m59:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m60:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m62:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m64:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m65:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m68:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m69:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m72:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m73:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m76:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m77:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m78:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m79:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m82:5\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 2 spaces but found 4    \u001b[2mindent\u001b[22m\n  \u001b[2m83:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m84:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m87:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m88:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m89:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m91:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m92:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m94:9\u001b[22m   \u001b[31merror\u001b[39m  Expected indentation of 6 spaces but found 8    \u001b[2mindent\u001b[22m\n  \u001b[2m95:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n  \u001b[2m97:13\u001b[22m  \u001b[31merror\u001b[39m  Expected indentation of 10 spaces but found 12  \u001b[2mindent\u001b[22m\n\n\u001b[31m\u001b[1m✖ 59 problems (59 errors, 0 warnings)\n\u001b[22m\u001b[39m\n    at lint (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:131:17)\n    at Object.module.exports (/home/james/Documents/phaser-ui/node_modules/eslint-loader/index.js:197:3)");
 
 /***/ }),
 /* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Progress_Progress_js__ = __webpack_require__(1);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Progress", function() { return __WEBPACK_IMPORTED_MODULE_0__Progress_Progress_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Progress_ProgressPie_js__ = __webpack_require__(4);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressPie", function() { return __WEBPACK_IMPORTED_MODULE_1__Progress_ProgressPie_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Progress_ProgressBar_js__ = __webpack_require__(3);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ProgressBar", function() { return __WEBPACK_IMPORTED_MODULE_2__Progress_ProgressBar_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Slider_ToggleSlider_js__ = __webpack_require__(5);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ToggleSlider", function() { return __WEBPACK_IMPORTED_MODULE_3__Slider_ToggleSlider_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__ = __webpack_require__(2);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Toast", function() { return __WEBPACK_IMPORTED_MODULE_4__Misc_Toast_js__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Misc_Graphics_js__ = __webpack_require__(0);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Graphics", function() { return __WEBPACK_IMPORTED_MODULE_5__Misc_Graphics_js__["a"]; });
-//bundle all the individual files together for export
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _Progress = __webpack_require__(2);
 
+Object.defineProperty(exports, 'Progress', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Progress).default;
+  }
+});
 
+var _ProgressPie = __webpack_require__(4);
 
+Object.defineProperty(exports, 'ProgressPie', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ProgressPie).default;
+  }
+});
 
+var _ProgressBar = __webpack_require__(3);
 
+Object.defineProperty(exports, 'ProgressBar', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ProgressBar).default;
+  }
+});
 
+var _ToggleSlider = __webpack_require__(5);
 
+Object.defineProperty(exports, 'ToggleSlider', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ToggleSlider).default;
+  }
+});
+
+var _Toast = __webpack_require__(1);
+
+Object.defineProperty(exports, 'Toast', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Toast).default;
+  }
+});
+
+var _Graphics = __webpack_require__(0);
+
+Object.defineProperty(exports, 'Graphics', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Graphics).default;
+  }
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ })
 /******/ ]);

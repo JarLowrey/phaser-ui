@@ -12,23 +12,26 @@ module.exports = {
     //needed in src library when extending/using Phaser objects/code. Relies on Consumers to import/include phaser and thus have the 'Phaser' variable globally available
     externals: {
         Phaser: 'Phaser'
-    }
-    /*
-    ,
+    },
     module: {
-        loaders: [{
-        {
-            test: /(\.jsx|\.js)$/,
-            loader: "eslint-loader",
-            exclude: /node_modules/
-        },
-            test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            loader: 'babel-loader',
-            query: {
-                presets: ['es2015']
+        rules: [{
+                enforce: "pre", //check source files, not modified by other loaders (like babel-loader)
+                test: /(\.jsx|\.js)$/,
+                exclude: /node_modules/,
+                loader: "eslint-loader",
+                options: {
+                    failOnWarning: false,
+                    failOnError: true
+                }
+            },
+            {
+                test: /(\.jsx|\.js)$/,
+                exclude: /(node_modules|bower_components)/,
+                loader: 'babel-loader',
+                query: {
+                    presets: ['es2015']
+                }
             }
-        }]
+        ]
     }
-    */
 };
