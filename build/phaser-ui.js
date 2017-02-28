@@ -264,34 +264,40 @@ var Progress = function (_Phaser$Group) {
     return _this;
   }
 
-  /*
-  makePressable(onPressedFunction, bgPressedColor, outlinePressedColor) {
-      this.bgPressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width - this.strokeLength, this.height - this.strokeLength));
-      this.bgPressed.anchor.setTo(0.5, 0.5);
-      this.addChildAt(this.bgPressed, 0);
-      this.bgPressed.tint = bgPressedColor;
-       this.outlinePressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width, this.height));
-      this.outlinePressed.anchor.setTo(0.5, 0.5);
-      this.addChildAt(this.outlinePressed, 0);
-      this.outlinePressed.tint = outlinePressedColor;
-       //register click listeners
+  _createClass(Progress, [{
+    key: 'makePressable',
+    value: function makePressable() {
+      var onPressedFunction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {
+        console.log('Progress UI Entity Pressed');
+      };
+      var bgPressedColor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '#000';
+      var frontPressedColor = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '#000';
+
+      this.bgPressedColor = bgPressedColor;
+      this.frontPressedColor = frontPressedColor;
+      this.notPressedBgTint = this.bgGraphic.tint;
+      console.log(this.notPressedBgTint);
+
+      //register click listeners
       this.setAll('inputEnabled', true);
       this.callAll('events.onInputDown.add', 'events.onInputDown', this.onDown, this);
       this.callAll('events.onInputUp.add', 'events.onInputUp', this.onUp, this);
       this.pressFunction = onPressedFunction;
-  }
-  onUp() {
-      this.swapChildren(this.bgPressed, this.bgSprite);
-      this.swapChildren(this.outlinePressed, this.outlineSprite);
-       this.pressFunction();
-  }
-  onDown() {
-      this.swapChildren(this.bgPressed, this.bgSprite);
-      this.swapChildren(this.outlinePressed, this.outlineSprite);
-  }
-  */
-
-  _createClass(Progress, [{
+    }
+  }, {
+    key: 'onUp',
+    value: function onUp() {
+      this.bgGraphic.tint = this.notPressedBgTint; //reset to white
+      this.frontGraphic.tint = this._getColor();
+      this.pressFunction();
+    }
+  }, {
+    key: 'onDown',
+    value: function onDown() {
+      this.bgGraphic.tint = this.bgPressedColor;
+      this.frontGraphic.tint = this.frontPressedColor;
+    }
+  }, {
     key: 'setText',
     value: function setText() {
       var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -483,7 +489,6 @@ var ProgressBar = function (_Progress) {
   function ProgressBar(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text) {
     _classCallCheck(this, ProgressBar);
 
-    console.log(texture);
     if (!texture) {
       texture = _Graphics2.default.roundedRectBmd;
     }

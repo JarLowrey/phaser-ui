@@ -71,6 +71,12 @@ export default class Game extends Phaser.State {
     bar3.y = this.game.world.centerY + 40;
     bar3.reversed = true;
 
+    let bar4 = new PhaserUi.ProgressBar(this.game, 100, 20, null, 2, 'Hello World');
+    bar4.x = this.game.world.centerX - 100;
+    bar4.y = this.game.world.centerY + 60;
+    bar4.progress = 0.5;
+    bar4.makePressable();
+
     //tween bar data
     this.game.add.tween(bar).to({
       progress: 1

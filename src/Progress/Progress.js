@@ -93,35 +93,34 @@ export default class Progress extends Phaser.Group {
     this.reversed = false;
   }
 
-  /*
-  makePressable(onPressedFunction, bgPressedColor, outlinePressedColor) {
-      this.bgPressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width - this.strokeLength, this.height - this.strokeLength));
-      this.bgPressed.anchor.setTo(0.5, 0.5);
-      this.addChildAt(this.bgPressed, 0);
-      this.bgPressed.tint = bgPressedColor;
 
-      this.outlinePressed = this.game.add.sprite(0, 0, this.getBarBitmapData(this.width, this.height));
-      this.outlinePressed.anchor.setTo(0.5, 0.5);
-      this.addChildAt(this.outlinePressed, 0);
-      this.outlinePressed.tint = outlinePressedColor;
+  makePressable(
+    onPressedFunction = function() {
+      console.log('Progress UI Entity Pressed. Overwrite this function by providing param one when calling `makePressable`');
+    },
+    bgPressedColor = '#000',
+    frontPressedColor = '#000'
+  ) {
+    this.bgPressedColor = bgPressedColor;
+    this.frontPressedColor = frontPressedColor;
+    this.notPressedBgTint = this.bgGraphic.tint;
+    console.log(this.notPressedBgTint)
 
-      //register click listeners
-      this.setAll('inputEnabled', true);
-      this.callAll('events.onInputDown.add', 'events.onInputDown', this.onDown, this);
-      this.callAll('events.onInputUp.add', 'events.onInputUp', this.onUp, this);
-      this.pressFunction = onPressedFunction;
+    //register click listeners
+    this.setAll('inputEnabled', true);
+    this.callAll('events.onInputDown.add', 'events.onInputDown', this.onDown, this);
+    this.callAll('events.onInputUp.add', 'events.onInputUp', this.onUp, this);
+    this.pressFunction = onPressedFunction;
   }
   onUp() {
-      this.swapChildren(this.bgPressed, this.bgSprite);
-      this.swapChildren(this.outlinePressed, this.outlineSprite);
-
-      this.pressFunction();
+    this.bgGraphic.tint = this.notPressedBgTint; //reset to white
+    this.frontGraphic.tint = this._getColor();
+    this.pressFunction();
   }
   onDown() {
-      this.swapChildren(this.bgPressed, this.bgSprite);
-      this.swapChildren(this.outlinePressed, this.outlineSprite);
+    this.bgGraphic.tint = this.bgPressedColor;
+    this.frontGraphic.tint = this.frontPressedColor;
   }
-  */
 
   setText(text = '', style = null) {
     this.text.setText(text);
