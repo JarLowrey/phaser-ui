@@ -1,6 +1,6 @@
 {
   "name": "phaser-ui",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Easy to use UI components for the Phaser.io game engine",
   "main": "build/phaser-ui.js",
   "scripts": {
