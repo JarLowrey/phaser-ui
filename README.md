@@ -2,6 +2,8 @@
 
 Easy to use UI components for the Phaser.io game engine
 
+[View all the working components right in your browser, click here](http://jtronlabs.com/phaser-ui/test/dist/).
+
 Currently includes
 
 - ProgressBar
