@@ -32,9 +32,4 @@ export default class Graphics {
     return bmd;
   }
 
-  static widthToScale(key, frame, desiredWidth = 20) {
-    const particleWidth = this.game.cache.getFrameByName(key, frame).width;
-    return desiredWidth / particleWidth;
-  }
-
 }

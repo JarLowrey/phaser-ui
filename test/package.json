@@ -7,7 +7,7 @@
     "test-dist": "gulp test-dist"
   },
   "dependencies": {
-    "phaser-ce": "^2.7.0",
+    "phaser-ce": "^2.7.5",
     "phaser-ui": "file:../"
   },
   "devDependencies": {

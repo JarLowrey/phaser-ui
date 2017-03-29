@@ -100,15 +100,7 @@ var Graphics = function () {
     _classCallCheck(this, Graphics);
   }
 
-  _createClass(Graphics, [{
-    key: 'widthToScale',
-    value: function widthToScale(key, frame) {
-      var desiredWidth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 20;
-
-      var particleWidth = this.game.cache.getFrameByName(key, frame).width;
-      return desiredWidth / particleWidth;
-    }
-  }], [{
+  _createClass(Graphics, null, [{
     key: 'roundedRectBmd',
     value: function roundedRectBmd(game, width, height) {
       var radius = height / 2;
