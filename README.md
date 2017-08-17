@@ -2,7 +2,7 @@
 
 Easy to use UI components for the Phaser.io game engine
 
-[View all the working components right in your browser, click here](http://jarlowrey.com/phaser-ui/test/dist/).
+[View all the working components right in your browser, click here](https://jarlowrey.github.io/phaser-ui/test/dist/).
 
 Currently includes
 
