@@ -26,7 +26,7 @@ var bar = new PhaserUi.ProgressBar(game,...);
 
 If you'd like to contribute, thank you!
 
-To set up the project, run `npm install`. Then `cd test && npm install` to set up the test project.
+To set up the project, run `cd test && npm install && cd && npm install` to set up the test project. IDK why installs have to be in this weird order, but it breaks for me if I try to do it another way (like installing [test's dependencies via a postinstall script](https://stackoverflow.com/questions/31773546/the-best-way-to-run-npm-install-for-nested-folders/39307622#39307622)).
 
 The UI components all live in `src/`, so if you want to add a file create it there and include it in `index.js`.
 Run `npm run test` to build the UI components with Webpack, install it locally to the test game in `test/src`, and start a local server to the test game.
