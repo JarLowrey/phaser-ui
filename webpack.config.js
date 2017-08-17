@@ -1,10 +1,11 @@
 var webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
   entry: './src/index.js',
   //setup the webpack output as a library
   output: {
-    path: 'build/',
+    path: path.resolve(__dirname, './build'),    
     filename: 'phaser-ui.js',
     libraryTarget: 'umd',
     library: 'phaserUi'

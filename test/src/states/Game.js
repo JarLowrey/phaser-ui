@@ -83,7 +83,7 @@ export default class Game extends Phaser.State {
     bar4.y = this.game.world.centerY + 60;
     bar4.progress = 0.5;
     bar4.makePressable(function() {
-      console.log('Wheeeee!')
+      console.log('Wheeeee!');
     }, 0x123456, 0xffffff);
 
     //tween bar data

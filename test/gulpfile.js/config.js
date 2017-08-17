@@ -27,10 +27,10 @@ const PHASER_BUILDS = 'node_modules/phaser-ce/build';
 // *  .../custom/phaser-arcade-physics.js: Including only Arcade Physics.
 // *  .../custom/phaser-no-physics.js: No physics engines included.
 //
-// Note: Other features are missing in the 'no physics' build, like Tilemaps. PARTICLES
+// Note: Other features are missing in the 'no physics' build, like Tilemaps.
 //    If you're getting exceptions when trying to create these game objects,
 //    change to another build option listed above.
-const PHASER = `${PHASER_BUILDS}/custom/phaser-no-physics.js`;
+const PHASER = `${PHASER_BUILDS}/custom/phaser-arcade-physics.js`;
 
 // Build output directories.
 exports.dirs = {

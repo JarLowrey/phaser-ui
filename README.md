@@ -2,7 +2,7 @@
 
 Easy to use UI components for the Phaser.io game engine
 
-[View all the working components right in your browser, click here](http://jtronlabs.com/phaser-ui/test/dist/).
+[View all the working components right in your browser, click here](http://jarlowrey.com/phaser-ui/test/dist/).
 
 Currently includes
 
@@ -25,6 +25,9 @@ var bar = new PhaserUi.ProgressBar(game,...);
 ## Contributing
 
 If you'd like to contribute, thank you!
+
+To set up the project, run `npm install`. Then `cd test && npm install` to set up the test project.
+
 The UI components all live in `src/`, so if you want to add a file create it there and include it in `index.js`.
 Run `npm run test` to build the UI components with Webpack, install it locally to the test game in `test/src`, and start a local server to the test game.
 

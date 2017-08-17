@@ -4,6 +4,7 @@
   "description": "Easy to use UI components for the Phaser.io game engine",
   "main": "build/phaser-ui.js",
   "scripts": {
+    "postinstall": "cd test && npm install",
     "test": "npm run build && cd test && npm install phaser-ui && npm start",
     "build": "webpack --display-error-details"
   },
