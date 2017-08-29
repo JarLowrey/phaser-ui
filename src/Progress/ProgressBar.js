@@ -13,7 +13,7 @@ export default class ProgressBar extends Progress {
     if (!texture) {
       texture = Graphics.roundedRectBmd;
     }
-    super(game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text);
+    super(game, width, height, texture, innerGraphicOffset, text, frontColor, fontStyle);
   }
 
   _applyCrop() {

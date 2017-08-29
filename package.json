@@ -1,10 +1,11 @@
 {
   "name": "phaser-ui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Easy to use UI components for the Phaser.io game engine",
   "main": "build/phaser-ui.js",
   "scripts": {
-    "test": "npm run build && cd test && npm install phaser-ui && npm start",
+    "setup": "cd test && npm install && cd .. && npm install",
+    "test": "npm run setup && npm run build && cd test && npm install phaser-ui && npm start",
     "build": "webpack --display-error-details"
   },
   "repository": {

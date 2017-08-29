@@ -17,8 +17,13 @@ export default {
   }],
 
   // -- General assets used throughout the game.
-  game: [{
-    key: 'phaser',
-    type: 'image'
-  }]
+  game: [
+    {
+      key: 'phaser',
+      type: 'image'
+    }, { //Source: https://opengameart.org/content/2d-bars
+      key: 'blood_bar',
+      type: 'image'
+    }
+  ]
 };

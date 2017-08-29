@@ -73,7 +73,7 @@ export default class Game extends Phaser.State {
     bar2.reversed = true;
     bar2.progress = 1;
 
-    let bar3 = new PhaserUi.ProgressBar(this.game, 100, 20, PhaserUi.Graphics.roundedRectBmd, 10, '');
+    let bar3 = new PhaserUi.ProgressBar(this.game, 100, 20, PhaserUi.Graphics.roundedRectBmd, 10, '',0x000000);
     bar3.x = this.game.world.centerX - 100;
     bar3.y = this.game.world.centerY + 40;
     bar3.reversed = true;
@@ -86,12 +86,28 @@ export default class Game extends Phaser.State {
       console.log('Wheeeee!');
     }, 0x123456, 0xffffff);
 
+    let bar5 = new PhaserUi.ProgressBar(this.game, 100, 20, 'blood_bar', 3, '');
+    bar5.x = this.game.world.centerX - 100;
+    bar5.y = this.game.world.centerY + 80;
+
+    let bar6 = new PhaserUi.ProgressBar(this.game, 100, 20, 'progress-bar', 8, '');
+    bar6.x = this.game.world.centerX - 100;
+    bar6.y = this.game.world.centerY + 100;
+
     //tween bar data
     this.game.add.tween(bar).to({
       progress: 1
     }, 2000, 'Linear', true, 0, -1, true);
 
     this.game.add.tween(bar3).to({
+      progress: 1
+    }, 2000, 'Linear', true, 0, -1, true);
+
+    this.game.add.tween(bar5).to({
+      progress: 1
+    }, 2000, 'Linear', true, 0, -1, true);
+    
+    this.game.add.tween(bar6).to({
       progress: 1
     }, 2000, 'Linear', true, 0, -1, true);
   }

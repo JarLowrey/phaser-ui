@@ -71,11 +71,25 @@ export default class Progress extends Phaser.Group {
     this.innerGraphicOffset = innerGraphicOffset;
 
     // create the sprites
-    this.bgBmd = Graphics.getBitmapData(this.game, texture, width, height);
+    if(typeof texture ==='string'){
+      let img = new Phaser.Image(this.game,0,0,texture);
+
+      //copy over all image's pixels and then resize the bitmap data to correct area
+      img.width = width;
+      img.height = height;
+      this.bgBmd = Graphics.getBitmapData(this.game, img, img.width, img.height);
+      
+      img.width = width - innerGraphicOffset;
+      img.height = height - innerGraphicOffset;
+      this.frontBmd = Graphics.getBitmapData(this.game, img, img.width, img.height);
+    }else{
+      this.bgBmd = Graphics.getBitmapData(this.game, texture, width, height);
+      this.frontBmd = Graphics.getBitmapData(this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);      
+    }
+
     this.bgGraphic = this.game.add.sprite(0, 0, this.bgBmd);
     this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-    this.frontBmd = Graphics.getBitmapData(this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);
     this.frontGraphic = this.game.add.sprite(0, 0, this.frontBmd);
     this.frontGraphic.anchor.setTo(0.5, 0.5);
 

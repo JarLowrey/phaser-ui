@@ -241,11 +241,25 @@ var Progress = function (_Phaser$Group) {
     _this.innerGraphicOffset = innerGraphicOffset;
 
     // create the sprites
-    _this.bgBmd = _Graphics2.default.getBitmapData(_this.game, texture, width, height);
+    if (typeof texture === 'string') {
+      var img = new Phaser.Image(_this.game, 0, 0, texture);
+
+      //copy over all image's pixels and then resize the bitmap data to correct area
+      img.width = width;
+      img.height = height;
+      _this.bgBmd = _Graphics2.default.getBitmapData(_this.game, img, img.width, img.height);
+
+      img.width = width - innerGraphicOffset;
+      img.height = height - innerGraphicOffset;
+      _this.frontBmd = _Graphics2.default.getBitmapData(_this.game, img, img.width, img.height);
+    } else {
+      _this.bgBmd = _Graphics2.default.getBitmapData(_this.game, texture, width, height);
+      _this.frontBmd = _Graphics2.default.getBitmapData(_this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);
+    }
+
     _this.bgGraphic = _this.game.add.sprite(0, 0, _this.bgBmd);
     _this.bgGraphic.anchor.setTo(0.5, 0.5);
 
-    _this.frontBmd = _Graphics2.default.getBitmapData(_this.game, texture, width - innerGraphicOffset, height - innerGraphicOffset);
     _this.frontGraphic = _this.game.add.sprite(0, 0, _this.frontBmd);
     _this.frontGraphic.anchor.setTo(0.5, 0.5);
 

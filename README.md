@@ -22,14 +22,20 @@ import * as PhaserUi from 'phaser-ui';
 var bar = new PhaserUi.ProgressBar(game,...);
 ```
 
+To learn how to consume these components, there's no API. 
+You just have to read the code located in `/src`.
+
 ## Contributing
 
 If you'd like to contribute, thank you!
 
-To set up the project, run `cd test && npm install && cd .. && npm install` to set up the test project. IDK why installs have to be in this weird order, but it breaks for me if I try to do it another way (like installing [test's dependencies via a postinstall script](https://stackoverflow.com/questions/31773546/the-best-way-to-run-npm-install-for-nested-folders/39307622#39307622)).
+To install dependencies, run `npm run setup`. 
+Do NOT `npm install` as it causes these nested projects to break (IDK why).
 
 The UI components all live in `src/`, so if you want to add a file create it there and include it in `index.js`.
-Run `npm run test` to build the UI components with Webpack, install it locally to the test game in `test/src`, and start a local server to the test game.
+`npm run test` builds the UI components with Webpack, installs it locally to the test game in `test/src`, and starts a local server to the test game.
+
+If you just want to run the test game: `cd test && npm run start`.
 
 The test directory contains a phaser game that was created with the [phaser-plus](https://github.com/rblopes/generator-phaser-plus) Yeoman generator.
 To create a new state run `yo phaser-plus:state` or for a new object run `yo phaser-plus:object`.
