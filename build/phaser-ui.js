@@ -504,7 +504,7 @@ var ProgressBar = function (_Progress) {
     if (!texture) {
       texture = _Graphics2.default.roundedRectBmd;
     }
-    return _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, game, width, height, texture, innerGraphicOffset, frontColor, fontStyle, text));
+    return _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, game, width, height, texture, innerGraphicOffset, text, frontColor, fontStyle));
   }
 
   _createClass(ProgressBar, [{
